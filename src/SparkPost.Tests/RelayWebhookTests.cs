@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using Should;
+using Shouldly;
 
 namespace SparkPost.Tests
 {
@@ -17,7 +17,7 @@ namespace SparkPost.Tests
             [Test]
             public void It_should_initialize_match_protocol()
             {
-                (new RelayWebhook()).Match.Protocol.ShouldEqual("SMTP");
+                (new RelayWebhook()).Match.Protocol.ShouldBe("SMTP");
             }
         }
     }

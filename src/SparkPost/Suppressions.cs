@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 using SparkPost.RequestSenders;
 using SparkPost.Utilities;
 
@@ -54,7 +53,7 @@ namespace SparkPost
         {
             var request = new Request
             {
-                Url = $"/api/{client.Version}/suppression-list/{HttpUtility.UrlEncode(email)}",
+                Url = $"/api/{client.Version}/suppression-list/{WebUtility.UrlEncode(email)}",
                 Method = "GET"
             };
 
@@ -113,7 +112,7 @@ namespace SparkPost
         {
             var request = new Request
             {
-                Url = $"api/{client.Version}/suppression-list/{HttpUtility.UrlEncode(email)}",
+                Url = $"api/{client.Version}/suppression-list/{WebUtility.UrlEncode(email)}",
                 Method = "DELETE"
             };
 

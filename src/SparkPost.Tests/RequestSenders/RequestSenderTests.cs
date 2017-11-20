@@ -2,7 +2,7 @@
 using AutoMoq.Helpers;
 using Moq;
 using NUnit.Framework;
-using Should;
+using Shouldly;
 using SparkPost.RequestSenders;
 
 namespace SparkPost.Tests.RequestSenders

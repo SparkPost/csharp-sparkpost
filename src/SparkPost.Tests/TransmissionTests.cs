@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Moq;
 using NUnit.Framework;
-using Should;
+using Shouldly;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.IO;
@@ -74,8 +74,8 @@ namespace SparkPost.Tests
             [Test]
             public void From_should_match()
             {
-                transmission.Content.From.Name.ShouldEqual(mailMessage.From.DisplayName);
-                transmission.Content.From.Email.ShouldEqual(mailMessage.From.Address);
+                transmission.Content.From.Name.ShouldBe(mailMessage.From.DisplayName);
+                transmission.Content.From.Email.ShouldBe(mailMessage.From.Address);
             }
 
             [Test]

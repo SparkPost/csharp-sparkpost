@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
 using SparkPost.Utilities;
 
 namespace SparkPost.RequestMethods
@@ -37,7 +37,7 @@ namespace SparkPost.RequestMethods
                 dictionary[thing.Key] = thing.Value.ToString();
 
             var values = dictionary
-                .Select(x => HttpUtility.UrlEncode(SnakeCase.Convert(x.Key)) + "=" + HttpUtility.UrlEncode(x.Value));
+                .Select(x => WebUtility.UrlEncode(SnakeCase.Convert(x.Key)) + "=" + WebUtility.UrlEncode(x.Value));
 
             return string.Join("&", values);
         }

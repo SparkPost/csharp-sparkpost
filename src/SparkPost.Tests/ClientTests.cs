@@ -2,7 +2,7 @@
 using System.Net.Http;
 using AutoMoq.Helpers;
 using NUnit.Framework;
-using Should;
+using Shouldly;
 
 namespace SparkPost.Tests
 {
@@ -46,7 +46,7 @@ namespace SparkPost.Tests
             [Test]
             public void It_should_default_to_async()
             {
-                client.CustomSettings.SendingMode.ShouldEqual(SendingModes.Async);
+                client.CustomSettings.SendingMode.ShouldBe(SendingModes.Async);
             }
 
             [Test]
@@ -59,7 +59,7 @@ namespace SparkPost.Tests
             public void It_should_set_any_subaccount_id_passed_to_it()
             {
                 (new Client(Guid.NewGuid().ToString(), 1234))
-                    .SubaccountId.ShouldEqual(1234);
+                    .SubaccountId.ShouldBe(1234);
             }
         }
 
@@ -75,7 +75,7 @@ namespace SparkPost.Tests
             [Test]
             public void It_should_default_to_the_library_version()
             {
-                Subject.UserAgent.ShouldEqual($"csharp-sparkpost/1.14.0");
+                Subject.UserAgent.ShouldBe($"csharp-sparkpost/1.14.0");
             }
 
             [Test]
@@ -83,7 +83,7 @@ namespace SparkPost.Tests
             {
                 var userAgent = Guid.NewGuid().ToString();
                 Subject.UserAgent = userAgent;
-                Subject.UserAgent.ShouldEqual(userAgent);
+                Subject.UserAgent.ShouldBe(userAgent);
             }
         }
     }

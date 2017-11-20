@@ -228,14 +228,14 @@ namespace SparkPost
         {
             var converters = ToDictionaryMethods();
             if (converters.ContainsKey(anything.GetType()))
-                return converters[anything.GetType()].Invoke(this, BindingFlags.Default, null,
-                    new[] {anything}, CultureInfo.CurrentCulture) as IDictionary<string, object>;
+                return converters[anything.GetType()].Invoke(this,
+                    new[] {anything}) as IDictionary<string, object>;
             return WithCommonConventions(anything);
         }
 
         public IDictionary<Type, MethodInfo> ToDictionaryMethods()
         {
-            return this.GetType().GetMethods()
+            return this.GetType().GetTypeInfo().GetMethods()
                 .Where(x => x.Name == "ToDictionary")
                 .Where(x => x.GetParameters().Length == 1)
                 .Select(x => new
@@ -249,6 +249,7 @@ namespace SparkPost
         private static bool AnyValuesWereSetOn(object target)
         {
             return target.GetType()
+                .GetTypeInfo()
                 .GetProperties()
                 .Any(x => x.GetValue(target) != null);
         }
@@ -264,7 +265,7 @@ namespace SparkPost
         {
             if (target == null) return null;
             if (results == null) results = new Dictionary<string, object>();
-            foreach (var property in target.GetType().GetProperties())
+            foreach (var property in target.GetType().GetTypeInfo().GetProperties())
             {
                 var name = SnakeCase.Convert(property.Name);
                 if (results.ContainsKey(name)) continue;

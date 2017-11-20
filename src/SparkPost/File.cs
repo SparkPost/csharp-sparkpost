@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Web;
+using SparkPost.Utilities;
 
 namespace SparkPost
 {
@@ -34,7 +34,7 @@ namespace SparkPost
             if (content != null)
             {
                 result.Data = Convert.ToBase64String(content);
-                result.Type = MimeMapping.GetMimeMapping(name);
+                result.Type = MimeTypes.GetMimeType(name);
                 result.Name = name;
             };
             return result;

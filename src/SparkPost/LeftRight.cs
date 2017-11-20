@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Reflection;
 
 namespace SparkPost
 {
@@ -6,8 +7,8 @@ namespace SparkPost
     {
         public static void SetValuesToMatch(object left, object right)
         {
-            var leftProperties = left.GetType().GetProperties();
-            var rightProperties = left.GetType().GetProperties();
+            var leftProperties = left.GetType().GetTypeInfo().GetProperties();
+            var rightProperties = left.GetType().GetTypeInfo().GetProperties();
             foreach (var rightProperty in rightProperties)
             {
                 try

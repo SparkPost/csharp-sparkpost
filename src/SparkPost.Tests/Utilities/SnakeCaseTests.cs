@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using Should;
+using Shouldly;
 using SparkPost.Utilities;
 
 namespace SparkPost.Tests.Utilities
@@ -10,10 +10,10 @@ namespace SparkPost.Tests.Utilities
         [Test]
         public void It_should_convert_things_to_snake_case()
         {
-            SnakeCase.Convert("T").ShouldEqual("t");
-            SnakeCase.Convert("Test").ShouldEqual("test");
-            SnakeCase.Convert("TEST").ShouldEqual("t_e_s_t");
-            SnakeCase.Convert("JohnGalt").ShouldEqual("john_galt");
+            SnakeCase.Convert("T").ShouldBe("t");
+            SnakeCase.Convert("Test").ShouldBe("test");
+            SnakeCase.Convert("TEST").ShouldBe("t_e_s_t");
+            SnakeCase.Convert("JohnGalt").ShouldBe("john_galt");
         }
 
         [Test]

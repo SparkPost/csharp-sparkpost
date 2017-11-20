@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace SparkPost.ValueMappers
 {
@@ -6,7 +7,7 @@ namespace SparkPost.ValueMappers
     {
         public bool CanMap(Type propertyType, object value)
         {
-            return propertyType.IsEnum;
+            return propertyType.GetTypeInfo().IsEnum;
         }
 
         public object Map(Type propertyType, object value)

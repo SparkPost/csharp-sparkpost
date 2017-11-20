@@ -6,7 +6,6 @@ using System.Xml.XPath;
 using AutoMoq.Helpers;
 using Moq;
 using NUnit.Framework;
-using Should;
 using SparkPost.RequestSenders;
 
 namespace SparkPost.Tests

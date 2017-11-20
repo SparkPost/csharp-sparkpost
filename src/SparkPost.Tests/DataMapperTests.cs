@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using Should;
+using Shouldly;
 using SparkPost.ValueMappers;
 
 namespace SparkPost.Tests
@@ -32,7 +32,7 @@ namespace SparkPost.Tests
                     ["address"]
                     .CastAs<IDictionary<string, object>>()
                     ["email"]
-                    .ShouldEqual(value);
+                    .ShouldBe(value);
             }
 
             [Test]
@@ -40,7 +40,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 recipient.ReturnPath = value;
-                mapper.ToDictionary(recipient)["return_path"].ShouldEqual(value);
+                mapper.ToDictionary(recipient)["return_path"].ShouldBe(value);
             }
 
             [Test]
@@ -54,7 +54,7 @@ namespace SparkPost.Tests
                     ["tags"];
                 theTags
                     .CastAs<IEnumerable<object>>()
-                    .Count().ShouldEqual(2);
+                    .Count().ShouldBe(2);
                 mapper.ToDictionary(recipient)
                     ["tags"]
                     .CastAs<IEnumerable<object>>()
@@ -79,7 +79,7 @@ namespace SparkPost.Tests
                 var value = Guid.NewGuid().ToString();
                 recipient.Metadata[key] = value;
                 mapper.ToDictionary(recipient)["metadata"]
-                    .CastAs<IDictionary<string, object>>()[key].ShouldEqual(value);
+                    .CastAs<IDictionary<string, object>>()[key].ShouldBe(value);
             }
 
             [Test]
@@ -95,7 +95,7 @@ namespace SparkPost.Tests
                 var value = Guid.NewGuid().ToString();
                 recipient.SubstitutionData[key] = value;
                 mapper.ToDictionary(recipient)["substitution_data"]
-                    .CastAs<IDictionary<string, object>>()[key].ShouldEqual(value);
+                    .CastAs<IDictionary<string, object>>()[key].ShouldBe(value);
             }
 
             [Test]
@@ -111,7 +111,7 @@ namespace SparkPost.Tests
                 var value = Guid.NewGuid().ToString();
                 recipient.SubstitutionData[key] = value;
                 mapper.ToDictionary(recipient)["substitution_data"]
-                    .CastAs<IDictionary<string, object>>()[key].ShouldEqual(value);
+                    .CastAs<IDictionary<string, object>>()[key].ShouldBe(value);
             }
 
             [Test]
@@ -140,7 +140,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 address.Email = value;
-                mapper.ToDictionary(address)["email"].ShouldEqual(value);
+                mapper.ToDictionary(address)["email"].ShouldBe(value);
             }
 
             [Test]
@@ -148,7 +148,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 address.Name = value;
-                mapper.ToDictionary(address)["name"].ShouldEqual(value);
+                mapper.ToDictionary(address)["name"].ShouldBe(value);
             }
 
             [Test]
@@ -156,7 +156,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 address.HeaderTo = value;
-                mapper.ToDictionary(address)["header_to"].ShouldEqual(value);
+                mapper.ToDictionary(address)["header_to"].ShouldBe(value);
             }
 
             [Test]
@@ -188,7 +188,7 @@ namespace SparkPost.Tests
                 mapper.ToDictionary(transmission)["content"]
                     .CastAs<IDictionary<string, object>>()["from"]
                     .CastAs<IDictionary<string, object>>()["email"]
-                    .ShouldEqual(email);
+                    .ShouldBe(email);
             }
 
             [Test]
@@ -200,13 +200,13 @@ namespace SparkPost.Tests
                 transmission.Recipients = new List<Recipient> { recipient1, recipient2 };
 
                 var result = mapper.ToDictionary(transmission)["recipients"] as IEnumerable<IDictionary<string, object>>;
-                result.Count().ShouldEqual(2);
+                result.Count().ShouldBe(2);
                 result.ToList()[0]["address"]
                     .CastAs<IDictionary<string, object>>()
-                    ["email"].ShouldEqual(recipient1.Address.Email);
+                    ["email"].ShouldBe(recipient1.Address.Email);
                 result.ToList()[1]["address"]
                     .CastAs<IDictionary<string, object>>()
-                    ["email"].ShouldEqual(recipient2.Address.Email);
+                    ["email"].ShouldBe(recipient2.Address.Email);
             }
 
             [Test]
@@ -216,7 +216,7 @@ namespace SparkPost.Tests
                 transmission.ListId = listId;
 
                 var result = mapper.ToDictionary(transmission)["recipients"] as IDictionary<string, object>;
-                result["list_id"].ShouldEqual(listId);
+                result["list_id"].ShouldBe(listId);
             }
 
             [Test]
@@ -224,7 +224,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 transmission.CampaignId = value;
-                mapper.ToDictionary(transmission)["campaign_id"].ShouldEqual(value);
+                mapper.ToDictionary(transmission)["campaign_id"].ShouldBe(value);
             }
 
             [Test]
@@ -232,7 +232,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 transmission.Description = value;
-                mapper.ToDictionary(transmission)["description"].ShouldEqual(value);
+                mapper.ToDictionary(transmission)["description"].ShouldBe(value);
             }
 
             [Test]
@@ -240,7 +240,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 transmission.ReturnPath = value;
-                mapper.ToDictionary(transmission)["return_path"].ShouldEqual(value);
+                mapper.ToDictionary(transmission)["return_path"].ShouldBe(value);
             }
 
             [Test]
@@ -256,7 +256,7 @@ namespace SparkPost.Tests
                 var value = Guid.NewGuid().ToString();
                 transmission.Metadata[key] = value;
                 mapper.ToDictionary(transmission)["metadata"]
-                    .CastAs<IDictionary<string, object>>()[key].ShouldEqual(value);
+                    .CastAs<IDictionary<string, object>>()[key].ShouldBe(value);
             }
 
             [Test]
@@ -282,7 +282,7 @@ namespace SparkPost.Tests
                 var value = Guid.NewGuid().ToString();
                 transmission.SubstitutionData[key] = value;
                 mapper.ToDictionary(transmission)["substitution_data"]
-                    .CastAs<IDictionary<string, object>>()[key].ShouldEqual(value);
+                    .CastAs<IDictionary<string, object>>()[key].ShouldBe(value);
             }
 
             [Test]
@@ -298,7 +298,7 @@ namespace SparkPost.Tests
                 var value = Guid.NewGuid().ToString();
                 transmission.SubstitutionData[key] = value;
                 mapper.ToDictionary(transmission)["substitution_data"]
-                    .CastAs<IDictionary<string, object>>()[key].ShouldEqual(value);
+                    .CastAs<IDictionary<string, object>>()[key].ShouldBe(value);
             }
 
             [Test]
@@ -307,17 +307,17 @@ namespace SparkPost.Tests
                 transmission.Options.ClickTracking = true;
                 mapper.ToDictionary(transmission)["options"]
                     .CastAs<IDictionary<string, object>>()
-                    ["click_tracking"].ShouldEqual(true);
+                    ["click_tracking"].ShouldBe(true);
 
                 transmission.Options.ClickTracking = false;
                 mapper.ToDictionary(transmission)["options"]
                     .CastAs<IDictionary<string, object>>()
-                    ["click_tracking"].ShouldEqual(false);
+                    ["click_tracking"].ShouldBe(false);
 
                 transmission.Options.InlineCss = true;
                 mapper.ToDictionary(transmission)["options"]
                     .CastAs<IDictionary<string, object>>()
-                    ["inline_css"].ShouldEqual(true);
+                    ["inline_css"].ShouldBe(true);
             }
         }
 
@@ -354,7 +354,7 @@ namespace SparkPost.Tests
                     .CastAs<IDictionary<string, string>>()
                     ["CC"];
 
-                cc.ShouldEqual(recipient1.Address.Email + ", " + recipient3.Address.Email);
+                cc.ShouldBe(recipient1.Address.Email + ", " + recipient3.Address.Email);
             }
             
             [TestCase(true)]
@@ -377,7 +377,7 @@ namespace SparkPost.Tests
                     .CastAs<IDictionary<string, object>>()
                     ["headers"]
                     .CastAs<IDictionary<string, string>>()
-                    [key].ShouldEqual(value);
+                    [key].ShouldBe(value);
             }
 
             [TestCase(true)]
@@ -477,8 +477,8 @@ namespace SparkPost.Tests
 
                 foreach (var address in addresses)
                 {
-                    address["name"].ShouldEqual(toName);
-                    address["header_to"].ShouldEqual(toEmail);
+                    address["name"].ShouldBe(toName);
+                    address["header_to"].ShouldBe(toEmail);
                 }
             }
 
@@ -498,7 +498,7 @@ namespace SparkPost.Tests
                     ["headers"]
                     .CastAs<IDictionary<string, string>>()
                     ["CC"]
-                    .ShouldEqual(result);
+                    .ShouldBe(result);
             }
 
             [TestCase("Jones, Bob", "bob@jones.com ", "\"Jones, Bob\" <bob@jones.com>")]
@@ -515,7 +515,7 @@ namespace SparkPost.Tests
                     ["headers"]
                     .CastAs<IDictionary<string, string>>()
                     ["CC"]
-                    .ShouldEqual(result);
+                    .ShouldBe(result);
             }
 
             [TestCase(0)]
@@ -539,9 +539,9 @@ namespace SparkPost.Tests
                     ["CC"];
 
                 if (numOfTos == 1)
-                    ccHeader.ShouldEqual(ccAddress);
+                    ccHeader.ShouldBe(ccAddress);
                 else
-                    ccHeader.ShouldEqual($"<{ccAddress}>");
+                    ccHeader.ShouldBe($"<{ccAddress}>");
             }
 
             [Test]
@@ -558,7 +558,7 @@ namespace SparkPost.Tests
                     .CastAs<IDictionary<string, string>>()
                     ["CC"];
 
-                ccHeader.ShouldEqual($"<{ccAddress}>");
+                ccHeader.ShouldBe($"<{ccAddress}>");
             }
         }
 
@@ -584,9 +584,9 @@ namespace SparkPost.Tests
 
                 var result = mapper.ToDictionary(content)["from"].CastAs<IDictionary<string, object>>();
 
-                result["email"].ShouldEqual(content.From.Email);
-                result["header_to"].ShouldEqual(content.From.HeaderTo);
-                result["name"].ShouldEqual(content.From.Name);
+                result["email"].ShouldBe(content.From.Email);
+                result["header_to"].ShouldBe(content.From.HeaderTo);
+                result["name"].ShouldBe(content.From.Name);
             }
 
             [Test]
@@ -594,7 +594,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 content.Subject = value;
-                mapper.ToDictionary(content)["subject"].ShouldEqual(value);
+                mapper.ToDictionary(content)["subject"].ShouldBe(value);
             }
 
             [Test]
@@ -602,7 +602,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 content.Text = value;
-                mapper.ToDictionary(content)["text"].ShouldEqual(value);
+                mapper.ToDictionary(content)["text"].ShouldBe(value);
             }
 
             [Test]
@@ -610,7 +610,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 content.TemplateId = value;
-                mapper.ToDictionary(content)["template_id"].ShouldEqual(value);
+                mapper.ToDictionary(content)["template_id"].ShouldBe(value);
             }
 
             [Test]
@@ -618,7 +618,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 content.Html = value;
-                mapper.ToDictionary(content)["html"].ShouldEqual(value);
+                mapper.ToDictionary(content)["html"].ShouldBe(value);
             }
 
             [Test]
@@ -626,7 +626,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 content.ReplyTo = value;
-                mapper.ToDictionary(content)["reply_to"].ShouldEqual(value);
+                mapper.ToDictionary(content)["reply_to"].ShouldBe(value);
             }
 
             [Test]
@@ -637,7 +637,7 @@ namespace SparkPost.Tests
                 content.Headers[key] = value;
                 mapper.ToDictionary(content)["headers"]
                     .CastAs<IDictionary<string, string>>()
-                    [key].ShouldEqual(value);
+                    [key].ShouldBe(value);
             }
 
             [Test]
@@ -660,7 +660,7 @@ namespace SparkPost.Tests
                     .Select(x => x.CastAs<Dictionary<string, object>>())
                     .Select(x => x["name"]);
 
-                names.Count().ShouldEqual(2);
+                names.Count().ShouldBe(2);
                 names.ShouldContain(firstName);
                 names.ShouldContain(secondName);
             }
@@ -685,7 +685,7 @@ namespace SparkPost.Tests
                     .Select(x => x.CastAs<Dictionary<string, object>>())
                     .Select(x => x["name"]);
 
-                names.Count().ShouldEqual(2);
+                names.Count().ShouldBe(2);
                 names.ShouldContain(firstName);
                 names.ShouldContain(secondName);
             }
@@ -721,11 +721,11 @@ namespace SparkPost.Tests
             {
                 options.OpenTracking = true;
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["open_tracking"].ShouldEqual(true);
+                    ["open_tracking"].ShouldBe(true);
 
                 options.OpenTracking = false;
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["open_tracking"].ShouldEqual(false);
+                    ["open_tracking"].ShouldBe(false);
             }
 
             [Test]
@@ -733,11 +733,11 @@ namespace SparkPost.Tests
             {
                 options.ClickTracking = true;
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["click_tracking"].ShouldEqual(true);
+                    ["click_tracking"].ShouldBe(true);
 
                 options.ClickTracking = false;
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["click_tracking"].ShouldEqual(false);
+                    ["click_tracking"].ShouldBe(false);
             }
 
             [Test]
@@ -745,11 +745,11 @@ namespace SparkPost.Tests
             {
                 options.Transactional = true;
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["transactional"].ShouldEqual(true);
+                    ["transactional"].ShouldBe(true);
 
                 options.Transactional = false;
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["transactional"].ShouldEqual(false);
+                    ["transactional"].ShouldBe(false);
             }
 
             [Test]
@@ -757,11 +757,11 @@ namespace SparkPost.Tests
             {
                 options.Sandbox = true;
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["sandbox"].ShouldEqual(true);
+                    ["sandbox"].ShouldBe(true);
 
                 options.Sandbox = false;
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["sandbox"].ShouldEqual(false);
+                    ["sandbox"].ShouldBe(false);
             }
 
             [Test]
@@ -769,11 +769,11 @@ namespace SparkPost.Tests
             {
                 options.SkipSuppression = true;
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["skip_suppression"].ShouldEqual(true);
+                    ["skip_suppression"].ShouldBe(true);
 
                 options.SkipSuppression = false;
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["skip_suppression"].ShouldEqual(false);
+                    ["skip_suppression"].ShouldBe(false);
             }
 
             [Test]
@@ -782,12 +782,12 @@ namespace SparkPost.Tests
                 var startTime = "2015-02-11T08:00:00-04:00";
                 options.StartTime = DateTimeOffset.Parse(startTime);
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["start_time"].ShouldEqual(startTime);
+                    ["start_time"].ShouldBe(startTime);
 
                 startTime = "2015-02-11T08:00:00-14:00";
                 options.StartTime = DateTimeOffset.Parse(startTime);
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["start_time"].ShouldEqual(startTime);
+                    ["start_time"].ShouldBe(startTime);
             }
 
             [Test]
@@ -804,11 +804,11 @@ namespace SparkPost.Tests
             {
                 options.InlineCss = true;
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["inline_css"].ShouldEqual(true);
+                    ["inline_css"].ShouldBe(true);
 
                 options.InlineCss = false;
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["inline_css"].ShouldEqual(false);
+                    ["inline_css"].ShouldBe(false);
             }
 
             [Test]
@@ -817,7 +817,7 @@ namespace SparkPost.Tests
                 var ipPool = Guid.NewGuid().ToString();
                 options.IpPool = ipPool;
                 mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["ip_pool"].ShouldEqual(ipPool);
+                    ["ip_pool"].ShouldBe(ipPool);
             }
         }
 
@@ -839,7 +839,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 file.Name = value;
-                mapper.ToDictionary(file)["name"].ShouldEqual(value);
+                mapper.ToDictionary(file)["name"].ShouldBe(value);
             }
 
             [Test]
@@ -847,7 +847,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 file.Type = value;
-                mapper.ToDictionary(file)["type"].ShouldEqual(value);
+                mapper.ToDictionary(file)["type"].ShouldBe(value);
             }
 
             [Test]
@@ -855,7 +855,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 file.Data = value;
-                mapper.ToDictionary(file)["data"].ShouldEqual(value);
+                mapper.ToDictionary(file)["data"].ShouldBe(value);
             }
         }
 
@@ -874,28 +874,28 @@ namespace SparkPost.Tests
             public void Name()
             {
                 var webhook = new Webhook {Name = Guid.NewGuid().ToString()};
-                dataMapper.ToDictionary(webhook)["name"].ShouldEqual(webhook.Name);
+                dataMapper.ToDictionary(webhook)["name"].ShouldBe(webhook.Name);
             }
 
             [Test]
             public void Target()
             {
                 var webhook = new Webhook {Target = Guid.NewGuid().ToString()};
-                dataMapper.ToDictionary(webhook)["target"].ShouldEqual(webhook.Target);
+                dataMapper.ToDictionary(webhook)["target"].ShouldBe(webhook.Target);
             }
 
             [Test]
             public void AuthType()
             {
                 var webhook = new Webhook {AuthType = Guid.NewGuid().ToString()};
-                dataMapper.ToDictionary(webhook)["auth_type"].ShouldEqual(webhook.AuthType);
+                dataMapper.ToDictionary(webhook)["auth_type"].ShouldBe(webhook.AuthType);
             }
 
             [Test]
             public void AuthToken()
             {
                 var webhook = new Webhook {AuthToken = Guid.NewGuid().ToString()};
-                dataMapper.ToDictionary(webhook)["auth_token"].ShouldEqual(webhook.AuthToken);
+                dataMapper.ToDictionary(webhook)["auth_token"].ShouldBe(webhook.AuthToken);
             }
 
             [Test]
@@ -910,7 +910,7 @@ namespace SparkPost.Tests
 
                 var dictionary = dataMapper.ToDictionary(webhook);
                 var events = dictionary["events"] as IEnumerable<object>;
-                events.Count().ShouldEqual(2);
+                events.Count().ShouldBe(2);
                 events.ShouldContain(first);
                 events.ShouldContain(second);
             }
@@ -929,17 +929,17 @@ namespace SparkPost.Tests
 
                 var dictionary = dataMapper.ToDictionary(webhook);
                 var authRequestDetails = dictionary["auth_request_details"].CastAs<IDictionary<string, object>>();
-                authRequestDetails["url"].ShouldEqual("https://oauth.myurl.com/tokens");
+                authRequestDetails["url"].ShouldBe("https://oauth.myurl.com/tokens");
 
                 authRequestDetails["body"]
                     .CastAs<IDictionary<string, object>>()
                     ["client_id"]
-                    .ShouldEqual("<oauth client id>");
+                    .ShouldBe("<oauth client id>");
 
                 authRequestDetails["body"]
                     .CastAs<IDictionary<string, object>>()
                     ["client_secret"]
-                    .ShouldEqual("<oauth client secret>");
+                    .ShouldBe("<oauth client secret>");
             }
 
             [Test]
@@ -956,8 +956,8 @@ namespace SparkPost.Tests
 
                 var dictionary = dataMapper.ToDictionary(webhook);
                 var authRequestDetails = dictionary["auth_credentials"] as Dictionary<string, object>;
-                authRequestDetails["access_token"].ShouldEqual("<oauth token>");
-                authRequestDetails["expires_in"].ShouldEqual(3600);
+                authRequestDetails["access_token"].ShouldBe("<oauth token>");
+                authRequestDetails["expires_in"].ShouldBe(3600);
             }
         }
 
@@ -977,35 +977,35 @@ namespace SparkPost.Tests
             public void Id()
             {
                 var subaccount = new Subaccount { Id = 432 };
-                dataMapper.ToDictionary(subaccount)["id"].ShouldEqual(subaccount.Id);
+                dataMapper.ToDictionary(subaccount)["id"].ShouldBe(subaccount.Id);
             }
 
             [Test]
             public void Name()
             {
                 var subaccount = new Subaccount { Name = Guid.NewGuid().ToString() };
-                dataMapper.ToDictionary(subaccount)["name"].ShouldEqual(subaccount.Name);
+                dataMapper.ToDictionary(subaccount)["name"].ShouldBe(subaccount.Name);
             }
 
             [Test]
             public void Status()
             {
                 var subaccount = new Subaccount { Status = SubaccountStatus.Terminated };
-                dataMapper.ToDictionary(subaccount)["status"].ShouldEqual(SubaccountStatus.Terminated.ToString().ToLowerInvariant());
+                dataMapper.ToDictionary(subaccount)["status"].ShouldBe(SubaccountStatus.Terminated.ToString().ToLowerInvariant());
             }
 
             [Test]
             public void IpPool()
             {
                 var subaccount = new Subaccount { IpPool = Guid.NewGuid().ToString() };
-                dataMapper.ToDictionary(subaccount)["ip_pool"].ShouldEqual(subaccount.IpPool);
+                dataMapper.ToDictionary(subaccount)["ip_pool"].ShouldBe(subaccount.IpPool);
             }
 
             [Test]
             public void ComplianceStatus()
             {
                 var subaccount = new Subaccount { ComplianceStatus = Guid.NewGuid().ToString() };
-                dataMapper.ToDictionary(subaccount)["compliance_status"].ShouldEqual(subaccount.ComplianceStatus);
+                dataMapper.ToDictionary(subaccount)["compliance_status"].ShouldBe(subaccount.ComplianceStatus);
             }
         }
 
@@ -1021,9 +1021,9 @@ namespace SparkPost.Tests
 
                 var result = dataMapper.CatchAll(new {FirstName = "Test1", LastName = "Test2", TheDate = dateTime});
 
-                result["first_name"].ShouldEqual("Test1");
-                result["last_name"].ShouldEqual("Test2");
-                ((string)result["the_date"]).Substring(0, 16).ShouldEqual("2016-01-02T03:04");
+                result["first_name"].ShouldBe("Test1");
+                result["last_name"].ShouldBe("Test2");
+                ((string)result["the_date"]).Substring(0, 16).ShouldBe("2016-01-02T03:04");
             }
         }
 
@@ -1045,7 +1045,7 @@ namespace SparkPost.Tests
             {
                 var value = Guid.NewGuid().ToString();
                 relayWebhook.Name = value;
-                mapper.ToDictionary(relayWebhook)["name"].ShouldEqual(value);
+                mapper.ToDictionary(relayWebhook)["name"].ShouldBe(value);
             }
 
             [Test]
@@ -1055,7 +1055,7 @@ namespace SparkPost.Tests
                 relayWebhook.Match = new RelayWebhookMatch {Domain = value};
                 mapper.ToDictionary(relayWebhook)["match"]
                     .CastAs<IDictionary<string, object>>()
-                    ["domain"].ShouldEqual(value);
+                    ["domain"].ShouldBe(value);
             }
 
             [Test]
@@ -1065,7 +1065,7 @@ namespace SparkPost.Tests
                 relayWebhook.Match = new RelayWebhookMatch {Protocol = value};
                 mapper.ToDictionary(relayWebhook)["match"]
                     .CastAs<IDictionary<string, object>>()
-                    ["protocol"].ShouldEqual(value);
+                    ["protocol"].ShouldBe(value);
             }
         }
 
@@ -1091,7 +1091,7 @@ namespace SparkPost.Tests
                     .CastAs<IDictionary<string, object>>()
                     ["dkim_status"]
                     .CastAs<string>()
-                    .ShouldEqual("pending");
+                    .ShouldBe("pending");
             }
 
             [Test]
@@ -1113,7 +1113,7 @@ namespace SparkPost.Tests
                     .CastAs<IDictionary<string, object>>()
                     ["public_key"]
                     .CastAs<string>()
-                    .ShouldEqual(publicKey);
+                    .ShouldBe(publicKey);
             }
 
             [Test]

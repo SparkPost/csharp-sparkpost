@@ -1,7 +1,7 @@
 ﻿using System;
 using AutoMoq.Helpers;
 using NUnit.Framework;
-using Should;
+using Shouldly;
 using SparkPost.RequestMethods;
 
 namespace SparkPost.Tests.RequestMethods

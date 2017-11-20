@@ -25,8 +25,7 @@ namespace SparkPost.ValueMappers
 
         public object Map(Type propertyType, object value)
         {
-            return converters[propertyType].Invoke(dataMapper, BindingFlags.Default, null,
-                new[] {value}, CultureInfo.CurrentCulture);
+            return converters[propertyType].Invoke(dataMapper, new[] {value});
         }
     }
 }
