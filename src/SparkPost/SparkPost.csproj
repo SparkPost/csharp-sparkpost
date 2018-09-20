@@ -85,6 +85,7 @@
     <Compile Include="PageLink.cs" />
     <Compile Include="RecipientList.cs" />
     <Compile Include="RecipientLists.cs" />
+    <Compile Include="RequestSenders\MonoRequestSender.cs" />
     <Compile Include="RetrieveRecipientListsResponse.cs" />
     <Compile Include="RetrieveRelayWebhookResponse.cs" />
     <Compile Include="InboundDomainResponse.cs" />
