@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using System.Reflection;
@@ -146,6 +147,60 @@ namespace SparkPost
 
             var response = await requestSender.Send(request);
             return response.StatusCode == HttpStatusCode.OK;
+        }
+
+        public async Task<PreviewTemplateResponse> Preview(string templateId,
+            IDictionary<string, object> substitutionData, bool? draft = null)
+        {
+            var data = new Dictionary<string, object>
+            {
+                {
+                    "substitution_data", substitutionData ?? new Dictionary<string, object>()
+                }
+            };
+            var request = new Request
+            {
+                Url = $"api/{client.Version}/templates/{templateId}/preview",
+                Method = "POST",
+                Data = data
+            };
+
+            if (draft != null)
+            {
+                string DraftTF = draft.ToString().ToLower();
+                request.Url += $"?draft={DraftTF}";
+            }
+
+            var response = await requestSender.Send(request);
+            if (response.StatusCode != HttpStatusCode.OK) throw new ResponseException(response);
+
+            var results = JsonConvert.DeserializeObject<dynamic>(response.Content).results;
+
+            Dictionary<string, string> Headers = new Dictionary<string, string>();
+            if (results.headers != null)
+            {
+                foreach (var property in results.content.headers.GetType().GetProperties())
+                {
+                    Headers[property.Name] = (string)property.GetValue(results.content.headers);
+                }
+            }
+
+            return new PreviewTemplateResponse()
+            {
+                ReasonPhrase = response.ReasonPhrase,
+                StatusCode = response.StatusCode,
+                Content = response.Content,
+                From = new Address()
+                {
+                    Email = results.from.email,
+                    Name = results.from.name 
+                },
+                Subject = results.subject,
+                ReplyTo = results.reply_to,
+                Text = results.text,
+                Html = results.html,
+                Headers = Headers
+            };
         }
     }
 }

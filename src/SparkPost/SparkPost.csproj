@@ -88,6 +88,7 @@
     <Compile Include="RetrieveRecipientListsResponse.cs" />
     <Compile Include="RetrieveRelayWebhookResponse.cs" />
     <Compile Include="InboundDomainResponse.cs" />
+    <Compile Include="PreviewTemplateResponse.cs" />
     <Compile Include="RetrieveTemplatesResponse.cs" />
     <Compile Include="SendingDomain.cs" />
     <Compile Include="SendingDomains.cs" />

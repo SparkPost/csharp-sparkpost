@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SparkPost
 {
@@ -25,5 +26,14 @@ namespace SparkPost
         Task<RetrieveTemplatesResponse> List();
 
         Task<bool> Delete(string templateId);
+
+        /// <summary>
+        /// Gets a preview of an email template.
+        /// </summary>
+        /// <param name="templateId">The id of the template to preview.</param>
+        /// <param name="substitutionData">The template's content will be expanded using this substitution data</param>
+        /// <param name="draft">If true, previews the draft template. If false, previews the published template.</param>
+        /// <returns>The response from the API.</returns>
+        Task<PreviewTemplateResponse> Preview(string templateId, IDictionary<string, object> substitutionData, bool? draft = null);
     }
 }
