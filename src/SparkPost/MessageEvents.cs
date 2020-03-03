@@ -1,8 +1,8 @@
-using System.Collections.Generic;
 using SparkPost.RequestSenders;
+using SparkPost.Utilities;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using SparkPost.Utilities;
 
 namespace SparkPost
 {
@@ -19,18 +19,26 @@ namespace SparkPost
 
         public async Task<ListMessageEventsResponse> List()
         {
-            return await List(null);
+            return await List((MessageEventsQuery)null);
         }
 
-        public async Task<ListMessageEventsResponse> List(object messageEventsQuery)
+        public async Task<ListMessageEventsResponse> List(MessageEventsQuery messageEventsQuery)
         {
-            if (messageEventsQuery == null) messageEventsQuery = new { };
+            return await this.List($"/api/{client.Version}/events/message", messageEventsQuery);
+        }
 
+        public async Task<ListMessageEventsResponse> List(string url)
+        {
+            return await this.List(url, null);
+        }
+
+        public async Task<ListMessageEventsResponse> List(string url, MessageEventsQuery messageEventsQuery)
+        {
             var request = new Request
             {
-                Url = $"/api/{client.Version}/message-events",
+                Url = url,
                 Method = "GET",
-                Data = messageEventsQuery
+                Data = (object)messageEventsQuery ?? new { }
             };
 
             var response = await requestSender.Send(request);
@@ -55,7 +63,7 @@ namespace SparkPost
         {
             var request = new Request
             {
-                Url = $"/api/{client.Version}/message-events/events/samples?events={events}",
+                Url = $"/api/{client.Version}/events/message/samples?events={events}",
                 Method = "GET"
             };
 
@@ -70,20 +78,12 @@ namespace SparkPost
             };
         }
 
-        private static IEnumerable<PageLink> ConvertToLinks(dynamic page_links)
+        private static PageLink ConvertToLinks(dynamic page_links)
         {
-            var links = new List<PageLink>();
+            var links = new PageLink();
 
-            if (page_links == null) return links;
+            if (page_links != null) links.Next = page_links.next;
 
-            foreach (var page_link in page_links)
-            {
-                links.Add(new PageLink
-                {
-                    Href = page_link.href,
-                    Type = page_link.rel
-                });
-            }
             return links;
         }
 
@@ -131,7 +131,6 @@ namespace SparkPost
                     QueueTime = result.queue_time,
                     RawRecipientTo = result.raw_rcpt_to,
                     SendingIp = result.sending_ip,
-                    TDate = result.tdate,
                     Transactional = result.transactional,
                     RemoteAddress = result.remote_addr,
                     Metadata = metadata,

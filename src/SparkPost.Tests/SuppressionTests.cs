@@ -66,7 +66,7 @@ namespace SparkPost.Tests
                     .Setup(x => x.Send(It.IsAny<Request>()))
                     .Callback((Request r) =>
                     {
-                        r.Url.ShouldEqual($"api/{version}/suppression-list/{email}");
+                        r.Url.ShouldEqual($"/api/{version}/suppression-list/{email}");
                         r.Method.ShouldEqual("DELETE");
                     })
                     .Returns(Task.FromResult(response));
@@ -89,7 +89,7 @@ namespace SparkPost.Tests
                     .Setup(x => x.Send(It.IsAny<Request>()))
                     .Callback((Request r) =>
                     {
-                        r.Url.ShouldEqual($"api/{version}/suppression-list/testing%40test.com");
+                        r.Url.ShouldEqual($"/api/{version}/suppression-list/testing%40test.com");
                         r.Method.ShouldEqual("DELETE");
                     })
                     .Returns(Task.FromResult(response));
@@ -158,7 +158,7 @@ namespace SparkPost.Tests
                     .Setup(x => x.Send(It.IsAny<Request>()))
                     .Callback((Request r) =>
                     {
-                        r.Url.ShouldEqual($"api/{client.Version}/suppression-list");
+                        r.Url.ShouldEqual($"/api/{client.Version}/suppression-list");
                         r.Method.ShouldEqual("PUT JSON");
                     })
                     .Returns(Task.FromResult(response));

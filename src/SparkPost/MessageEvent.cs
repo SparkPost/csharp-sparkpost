@@ -310,12 +310,6 @@ namespace SparkPost
 
         /// <summary>
         /// Not documented.
-        /// "tdate": "2016-04-27T22:05:40.000Z",
-        /// </summary>
-        public DateTime TDate { get; set; }
-
-        /// <summary>
-        /// Not documented.
         /// "transactional": "1",
         /// </summary>
         public string Transactional { get; set; }

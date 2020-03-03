@@ -1,7 +1,7 @@
 ﻿namespace SparkPost
 {
     // Values taken from:
-    // https://developers.sparkpost.com/api/#/reference/message-events/message-events
+    // https://developers.sparkpost.com/api/events/
     // Additional values and descriptions taken from:
     // https://support.sparkpost.com/customer/portal/articles/1976204-webhook-event-reference
 
@@ -60,6 +60,34 @@
         /// Recipient opened a message in a mail client, thus rendering a tracking pixel.
         /// </summary>
         Open,
+
+        /// <summary>
+        /// initial_open
+        /// Initial Open.
+        /// Recipient opened a message in a mail client, thus rendering a tracking pixel at the top of the message.
+        /// </summary>
+        InitialOpen,
+
+        /// <summary>
+        /// amp_click
+        /// AMP Click.
+        /// Recipient clicked a tracked link in an AMP message, thus prompting a redirect through the SparkPost click-tracking server to the link's destination.
+        /// </summary>
+        AmpClick,
+
+        /// <summary>
+        /// amp_open
+        /// AMP Open.
+        /// Recipient opened an AMP message in a mail client, thus rendering a tracking pixel at the bottom of the message.
+        /// </summary>
+        AmpOpen,
+
+        /// <summary>
+        /// amp_initial_open
+        /// AMP Initial Open.
+        /// Recipient opened an AMP message in a mail client, thus rendering a tracking pixel at the top of the message.
+        /// </summary>
+        AmpInitialOpen,
 
         /// <summary>
         /// click

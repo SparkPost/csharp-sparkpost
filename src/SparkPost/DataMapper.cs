@@ -182,15 +182,14 @@ namespace SparkPost
             return WithCommonConventions(query, new Dictionary<string, object>()
             {
                 ["events"] = string.Join(",", query.Events),
-                ["campaign_ids"] = string.Join(",", query.CampaignIds),
+                ["campaigns"] = string.Join(",", query.CampaignIds),
                 ["bounce_classes"] = string.Join(",", query.BounceClasses),
-                ["campaign_ids"] = string.Join(",", query.CampaignIds),
-                ["friendly_froms"] = string.Join(",", query.FriendlyFroms),
-                ["message_ids"] = string.Join(",", query.MessageIds),
+                ["from_addresses"] = string.Join(",", query.FromAddresses),
+                ["messages"] = string.Join(",", query.MessageIds),
                 ["recipients"] = string.Join(",", query.Recipients),
                 ["subaccounts"] = string.Join(",", query.Subaccounts),
-                ["template_ids"] = string.Join(",", query.TemplateIds),
-                ["transmission_ids"] = string.Join(",", query.TransmissionIds)
+                ["templates"] = string.Join(",", query.TemplateIds),
+                ["transmissions"] = string.Join(",", query.TransmissionIds)
             });
         }
 

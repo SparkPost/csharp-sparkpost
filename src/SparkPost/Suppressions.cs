@@ -1,10 +1,10 @@
+using SparkPost.RequestSenders;
+using SparkPost.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
-using SparkPost.RequestSenders;
-using SparkPost.Utilities;
 
 namespace SparkPost
 {
@@ -21,32 +21,43 @@ namespace SparkPost
             this.dataMapper = dataMapper;
         }
 
-        public async Task<ListSuppressionResponse> List(SuppressionsQuery supppressionsQuery)
+        public async Task<ListSuppressionResponse> List()
         {
-            return await List(supppressionsQuery as object);
+            return await List((SuppressionsQuery)null);
         }
 
-        public async Task<ListSuppressionResponse> List(object query = null)
+        public async Task<ListSuppressionResponse> List(SuppressionsQuery supppressionsQuery)
         {
-            if (query == null) query = new {};
+            return await this.List($"/api/{client.Version}/suppression-list", supppressionsQuery);
+        }
+
+        public async Task<ListSuppressionResponse> List(string url)
+        {
+            return await this.List(url, null);
+        }
+
+        public async Task<ListSuppressionResponse> List(string url, SuppressionsQuery supppressionsQuery)
+        {
             var request = new Request
             {
-                Url = $"/api/{client.Version}/suppression-list",
+                Url = url,
                 Method = "GET",
-                Data = query
+                Data = (object)supppressionsQuery ?? new { }
             };
 
             var response = await requestSender.Send(request);
             if (response.StatusCode != HttpStatusCode.OK) throw new ResponseException(response);
 
-            var results = Jsonification.DeserializeObject<dynamic>(response.Content).results;
+            var content = Jsonification.DeserializeObject<dynamic>(response.Content);
 
             return new ListSuppressionResponse
             {
                 ReasonPhrase = response.ReasonPhrase,
                 StatusCode = response.StatusCode,
                 Content = response.Content,
-                Suppressions = ConvertResultsToAListOfSuppressions(results)
+                Suppressions = ConvertResultsToAListOfSuppressions(content.results),
+                TotalCount = content.total_count,
+                Links = ConvertToLinks(content.links)
             };
         }
 
@@ -60,7 +71,7 @@ namespace SparkPost
 
             var response = await requestSender.Send(request);
 
-            if (new[] {HttpStatusCode.OK, HttpStatusCode.NotFound}.Contains(response.StatusCode) == false)
+            if (new[] { HttpStatusCode.OK, HttpStatusCode.NotFound }.Contains(response.StatusCode) == false)
                 throw new ResponseException(response);
 
             dynamic results = response.StatusCode == HttpStatusCode.OK
@@ -93,7 +104,7 @@ namespace SparkPost
         {
             var request = new Request
             {
-                Url = $"api/{client.Version}/suppression-list",
+                Url = $"/api/{client.Version}/suppression-list",
                 Method = "PUT JSON",
                 Data = new
                 {
@@ -113,12 +124,31 @@ namespace SparkPost
         {
             var request = new Request
             {
-                Url = $"api/{client.Version}/suppression-list/{HttpUtility.UrlEncode(email)}",
+                Url = $"/api/{client.Version}/suppression-list/{HttpUtility.UrlEncode(email)}",
                 Method = "DELETE"
             };
 
             var response = await requestSender.Send(request);
+            if (response.StatusCode != HttpStatusCode.NoContent) throw new ResponseException(response);
+
             return response.StatusCode == HttpStatusCode.NoContent;
+        }
+
+        private static PageLink ConvertToLinks(dynamic links)
+        {
+            var pageLink = new PageLink();
+
+            if (links == null) return pageLink;
+
+            foreach (var link in links)
+            {
+                if (link.rel == "next")
+                {
+                    pageLink.Next = link.href;
+                }
+            }
+
+            return pageLink;
         }
 
         private static IEnumerable<Suppression> ConvertResultsToAListOfSuppressions(dynamic results)

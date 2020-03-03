@@ -67,6 +67,13 @@
         AdminFailure = 25,
 
         /// <summary>
+        /// Smart Send Suppression
+        /// The message was suppressed by Smart Send policy.
+        /// Category: Admin.
+        /// </summary>
+        SmartSendSuppression = 26,
+
+        /// <summary>
         /// Generic Bounce: No RCPT
         /// No recipient could be determined for the message.
         /// Category: Hard.

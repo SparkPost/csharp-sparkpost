@@ -23,7 +23,7 @@ namespace SparkPost.Tests
             [Test]
             public void It_should_have_a_default_friendly_froms_list()
             {
-                new MessageEventsQuery().FriendlyFroms.ShouldNotBeNull();
+                new MessageEventsQuery().FromAddresses.ShouldNotBeNull();
             }
 
             [Test]

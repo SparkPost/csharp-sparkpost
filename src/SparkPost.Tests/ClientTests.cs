@@ -75,7 +75,7 @@ namespace SparkPost.Tests
             [Test]
             public void It_should_default_to_the_library_version()
             {
-                Subject.UserAgent.ShouldEqual($"csharp-sparkpost/1.14.0");
+                Subject.UserAgent.ShouldEqual($"csharp-sparkpost/1.15.0");
             }
 
             [Test]
