@@ -1,197 +1,180 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
-using Should;
-using SparkPost.ValueMappers;
+using Xunit;
 
 namespace SparkPost.Tests
 {
     public class DataMapperTests
     {
-
-        [TestFixture]
         public class RecipientMappingTests
         {
-            [SetUp]
-            public void Setup()
+            private readonly DataMapper mapper;
+            private readonly Recipient recipient;
+
+
+            public RecipientMappingTests()
             {
                 recipient = new Recipient();
                 mapper = new DataMapper("v1");
             }
-
-            private DataMapper mapper;
-            private Recipient recipient;
-
-            [Test]
+            
+            [Fact]
             public void address()
             {
                 var value = Guid.NewGuid().ToString();
                 recipient.Address.Email = value;
-                mapper.ToDictionary(recipient)
+                var x = mapper.ToDictionary(recipient)["address"];
+                Assert.Equal(value, mapper.ToDictionary(recipient)
                     ["address"]
                     .CastAs<IDictionary<string, object>>()
-                    ["email"]
-                    .ShouldEqual(value);
+                    ["email"]);
             }
 
-            [Test]
+            [Fact]
             public void return_path()
             {
                 var value = Guid.NewGuid().ToString();
                 recipient.ReturnPath = value;
-                mapper.ToDictionary(recipient)["return_path"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(recipient)["return_path"]);
             }
 
-            [Test]
+            [Fact]
             public void tags()
             {
                 var tag1 = Guid.NewGuid().ToString();
                 var tag2 = Guid.NewGuid().ToString();
                 recipient.Tags.Add(tag1);
                 recipient.Tags.Add(tag2);
-                var theTags = mapper.ToDictionary(recipient)
-                    ["tags"];
-                theTags
-                    .CastAs<IEnumerable<object>>()
-                    .Count().ShouldEqual(2);
-                mapper.ToDictionary(recipient)
-                    ["tags"]
-                    .CastAs<IEnumerable<object>>()
-                    .ShouldContain(tag1);
-                mapper.ToDictionary(recipient)
-                    ["tags"]
-                    .CastAs<IEnumerable<object>>()
-                    .ShouldContain(tag2);
+                var theTags = mapper.ToDictionary(recipient)["tags"];
+                Assert.Equal(2, theTags.CastAs<IEnumerable<object>>().Count());
+                Assert.Contains(tag1, mapper.ToDictionary(recipient)["tags"]
+                    .CastAs<IEnumerable<object>>());
+                Assert.Contains(tag2, mapper.ToDictionary(recipient)["tags"]
+                    .CastAs<IEnumerable<object>>());
             }
 
-            [Test]
+            [Fact]
             public void empty_tags_are_ignored()
             {
-                mapper.ToDictionary(recipient)
-                    .Keys.ShouldNotContain("tags");
+                Assert.DoesNotContain("tags", mapper.ToDictionary(recipient).Keys);
             }
 
-            [Test]
+            [Fact]
             public void metadata()
             {
                 var key = Guid.NewGuid().ToString();
                 var value = Guid.NewGuid().ToString();
                 recipient.Metadata[key] = value;
-                mapper.ToDictionary(recipient)["metadata"]
-                    .CastAs<IDictionary<string, object>>()[key].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(recipient)["metadata"]
+                    .CastAs<IDictionary<string, object>>()[key]);
             }
 
-            [Test]
+            [Fact]
             public void do_not_include_empty_metadata()
             {
-                mapper.ToDictionary(recipient).Keys.ShouldNotContain("metadata");
+                Assert.DoesNotContain("metadata", mapper.ToDictionary(recipient).Keys);
             }
 
-            [Test]
+            [Fact]
             public void substitution_data()
             {
                 var key = Guid.NewGuid().ToString();
                 var value = Guid.NewGuid().ToString();
                 recipient.SubstitutionData[key] = value;
-                mapper.ToDictionary(recipient)["substitution_data"]
-                    .CastAs<IDictionary<string, object>>()[key].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(recipient)["substitution_data"]
+                    .CastAs<IDictionary<string, object>>()[key]);
             }
 
-            [Test]
+            [Fact]
             public void do_not_include_empty_substitution_data()
             {
-                mapper.ToDictionary(recipient).Keys.ShouldNotContain("substitution_data");
+                Assert.DoesNotContain("substitution_data", mapper.ToDictionary(recipient).Keys);
             }
 
-            [Test]
+            [Fact]
             public void do_not_alter_the_keys_passed_to_substitution_data()
             {
                 var key = "TEST";
                 var value = Guid.NewGuid().ToString();
                 recipient.SubstitutionData[key] = value;
-                mapper.ToDictionary(recipient)["substitution_data"]
-                    .CastAs<IDictionary<string, object>>()[key].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(recipient)["substitution_data"]
+                    .CastAs<IDictionary<string, object>>()[key]);
             }
 
-            [Test]
+            [Fact]
             public void The_type_should_be_ignored()
             {
                 recipient.Type = RecipientType.CC;
-                mapper.ToDictionary(recipient).Keys.ShouldNotContain("type");
+                Assert.DoesNotContain("type", mapper.ToDictionary(recipient).Keys);
             }
         }
 
-        [TestFixture]
+
         public class AddressMappingTests
         {
-            [SetUp]
-            public void Setup()
+            private readonly Address address;
+            private readonly DataMapper mapper;
+
+            public AddressMappingTests()
             {
                 address = new Address();
                 mapper = new DataMapper("v1");
             }
 
-            private Address address;
-            private DataMapper mapper;
-
-            [Test]
+            [Fact]
             public void email()
             {
                 var value = Guid.NewGuid().ToString();
                 address.Email = value;
-                mapper.ToDictionary(address)["email"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(address)["email"]);
             }
 
-            [Test]
+            [Fact]
             public void name()
             {
                 var value = Guid.NewGuid().ToString();
                 address.Name = value;
-                mapper.ToDictionary(address)["name"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(address)["name"]);
             }
 
-            [Test]
+            [Fact]
             public void header_to()
             {
                 var value = Guid.NewGuid().ToString();
                 address.HeaderTo = value;
-                mapper.ToDictionary(address)["header_to"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(address)["header_to"]);
             }
 
-            [Test]
+            [Fact]
             public void header_to_is_not_returned_if_empty()
             {
-                mapper.ToDictionary(address)
-                    .Keys.ShouldNotContain("header_to");
+                Assert.DoesNotContain("header_to", mapper.ToDictionary(address).Keys);
             }
         }
 
-        [TestFixture]
         public class TransmissionMappingTests
         {
-            [SetUp]
-            public void Setup()
+            private readonly Transmission transmission;
+            private readonly DataMapper mapper;
+
+            public TransmissionMappingTests()
             {
                 transmission = new Transmission();
                 mapper = new DataMapper("v1");
             }
 
-            private Transmission transmission;
-            private DataMapper mapper;
-
-            [Test]
+            [Fact]
             public void It_should_set_the_content_dictionary()
             {
                 var email = Guid.NewGuid().ToString();
                 transmission.Content.From = new Address { Email = email };
-                mapper.ToDictionary(transmission)["content"]
+                Assert.Equal(email, mapper.ToDictionary(transmission)["content"]
                     .CastAs<IDictionary<string, object>>()["from"]
-                    .CastAs<IDictionary<string, object>>()["email"]
-                    .ShouldEqual(email);
+                    .CastAs<IDictionary<string, object>>()["email"]);
             }
 
-            [Test]
+            [Fact]
             public void It_should_set_the_recipients()
             {
                 var recipient1 = new Recipient { Address = new Address { Email = Guid.NewGuid().ToString() } };
@@ -200,188 +183,181 @@ namespace SparkPost.Tests
                 transmission.Recipients = new List<Recipient> { recipient1, recipient2 };
 
                 var result = mapper.ToDictionary(transmission)["recipients"] as IEnumerable<IDictionary<string, object>>;
-                result.Count().ShouldEqual(2);
-                result.ToList()[0]["address"]
+                Assert.Equal(2, result.Count());
+                Assert.Equal(recipient1.Address.Email, result.ToList()[0]["address"]
                     .CastAs<IDictionary<string, object>>()
-                    ["email"].ShouldEqual(recipient1.Address.Email);
-                result.ToList()[1]["address"]
+                    ["email"]);
+                Assert.Equal(recipient2.Address.Email, result.ToList()[1]["address"]
                     .CastAs<IDictionary<string, object>>()
-                    ["email"].ShouldEqual(recipient2.Address.Email);
+                    ["email"]);
             }
 
-            [Test]
+            [Fact]
             public void It_should_set_the_recipients_to_a_list_id_if_a_list_id_is_provided()
             {
                 var listId = Guid.NewGuid().ToString();
                 transmission.ListId = listId;
 
                 var result = mapper.ToDictionary(transmission)["recipients"] as IDictionary<string, object>;
-                result["list_id"].ShouldEqual(listId);
+                Assert.Equal(listId, result["list_id"]);
             }
 
-            [Test]
+            [Fact]
             public void campaign_id()
             {
                 var value = Guid.NewGuid().ToString();
                 transmission.CampaignId = value;
-                mapper.ToDictionary(transmission)["campaign_id"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(transmission)["campaign_id"]);
             }
 
-            [Test]
+            [Fact]
             public void description()
             {
                 var value = Guid.NewGuid().ToString();
                 transmission.Description = value;
-                mapper.ToDictionary(transmission)["description"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(transmission)["description"]);
             }
 
-            [Test]
+            [Fact]
             public void return_path()
             {
                 var value = Guid.NewGuid().ToString();
                 transmission.ReturnPath = value;
-                mapper.ToDictionary(transmission)["return_path"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(transmission)["return_path"]);
             }
 
-            [Test]
+            [Fact]
             public void do_not_send_the_return_path_if_it_is_not_provided()
             {
-                mapper.ToDictionary(transmission).Keys.ShouldNotContain("return_path");
+                Assert.DoesNotContain("return_path", mapper.ToDictionary(transmission).Keys);
             }
 
-            [Test]
+            [Fact]
             public void metadata()
             {
                 var key = Guid.NewGuid().ToString();
                 var value = Guid.NewGuid().ToString();
                 transmission.Metadata[key] = value;
-                mapper.ToDictionary(transmission)["metadata"]
-                    .CastAs<IDictionary<string, object>>()[key].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(transmission)["metadata"]
+                    .CastAs<IDictionary<string, object>>()[key]);
             }
 
-            [Test]
+            [Fact]
             public void do_not_alter_the_keys_passed_to_metadata()
             {
                 var key = "TEST";
                 var value = Guid.NewGuid().ToString();
                 transmission.Metadata[key] = value;
-                mapper.ToDictionary(transmission)["metadata"]
-                    .CastAs<IDictionary<string, object>>()[key].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(transmission)["metadata"]
+                    .CastAs<IDictionary<string, object>>()[key]);
             }
 
-            [Test]
+            [Fact]
             public void do_not_include_empty_metadata()
             {
-                mapper.ToDictionary(transmission).Keys.ShouldNotContain("metadata");
+                Assert.DoesNotContain("metadata", mapper.ToDictionary(transmission).Keys);
             }
 
-            [Test]
+            [Fact]
             public void substitution_data()
             {
                 var key = Guid.NewGuid().ToString();
                 var value = Guid.NewGuid().ToString();
                 transmission.SubstitutionData[key] = value;
-                mapper.ToDictionary(transmission)["substitution_data"]
-                    .CastAs<IDictionary<string, object>>()[key].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(transmission)["substitution_data"]
+                    .CastAs<IDictionary<string, object>>()[key]);
             }
 
-            [Test]
+            [Fact]
             public void do_not_include_empty_substitution_data()
             {
-                mapper.ToDictionary(transmission).Keys.ShouldNotContain("substitution_data");
+                Assert.DoesNotContain("substitution_data", mapper.ToDictionary(transmission).Keys);
             }
 
-            [Test]
+            [Fact]
             public void do_not_alter_the_keys_passed_to_substitution_data()
             {
                 var key = "TEST";
                 var value = Guid.NewGuid().ToString();
                 transmission.SubstitutionData[key] = value;
-                mapper.ToDictionary(transmission)["substitution_data"]
-                    .CastAs<IDictionary<string, object>>()[key].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(transmission)["substitution_data"]
+                    .CastAs<IDictionary<string, object>>()[key]);
             }
 
-            [Test]
+            [Fact]
             public void options()
             {
                 transmission.Options.ClickTracking = true;
-                mapper.ToDictionary(transmission)["options"]
-                    .CastAs<IDictionary<string, object>>()
-                    ["click_tracking"].ShouldEqual(true);
+                Assert.True((bool)mapper.ToDictionary(transmission)["options"]
+                    .CastAs<IDictionary<string, object>>()["click_tracking"]);
 
                 transmission.Options.ClickTracking = false;
-                mapper.ToDictionary(transmission)["options"]
-                    .CastAs<IDictionary<string, object>>()
-                    ["click_tracking"].ShouldEqual(false);
+                Assert.False((bool)mapper.ToDictionary(transmission)["options"]
+                    .CastAs<IDictionary<string, object>>()["click_tracking"]);
 
                 transmission.Options.InlineCss = true;
-                mapper.ToDictionary(transmission)["options"]
-                    .CastAs<IDictionary<string, object>>()
-                    ["inline_css"].ShouldEqual(true);
+                Assert.True((bool)mapper.ToDictionary(transmission)["options"]
+                    .CastAs<IDictionary<string, object>>()["inline_css"]);
             }
         }
 
-        [TestFixture]
+
         public class MappingCcFields
         {
-            [SetUp]
-            public void Setup()
+            private readonly Transmission transmission;
+            private readonly DataMapper mapper;
+
+            public MappingCcFields()
             {
                 transmission = new Transmission();
                 mapper = new DataMapper("v1");
             }
 
-            private Transmission transmission;
-            private DataMapper mapper;
-
-            [TestCase(true)]
-            [TestCase(false)]
+            [Theory]
+            [InlineData(true)]
+            [InlineData(false)]
             public void It_should_set_the_CC_Header_for_only_the_cc_emails(bool useTo)
             {
-                var recipient1 = new Recipient {Type = RecipientType.CC, Address = new Address {Email = Guid.NewGuid().ToString()}};
-                var recipient2 = new Recipient {Type = RecipientType.BCC, Address = new Address { Email = Guid.NewGuid().ToString()}};
-                var recipient3 = new Recipient {Type = RecipientType.CC, Address = new Address {Email = Guid.NewGuid().ToString()}};
-                var recipient4 = useTo 
+                var recipient1 = new Recipient { Type = RecipientType.CC, Address = new Address { Email = Guid.NewGuid().ToString() } };
+                var recipient2 = new Recipient { Type = RecipientType.BCC, Address = new Address { Email = Guid.NewGuid().ToString() } };
+                var recipient3 = new Recipient { Type = RecipientType.CC, Address = new Address { Email = Guid.NewGuid().ToString() } };
+                var recipient4 = useTo
                         ? new Recipient { Type = RecipientType.To, Address = new Address { Email = Guid.NewGuid().ToString() } }
                         : new Recipient();
 
-                transmission.Recipients = new List<Recipient> {recipient1, recipient2, recipient3, recipient4};
+                transmission.Recipients = new List<Recipient> { recipient1, recipient2, recipient3, recipient4 };
 
-                var cc = mapper.ToDictionary(transmission)
-                    ["content"]
-                    .CastAs<IDictionary<string, object>>()
-                    ["headers"]
-                    .CastAs<IDictionary<string, string>>()
-                    ["CC"];
+                var cc = mapper.ToDictionary(transmission)["content"]
+                    .CastAs<IDictionary<string, object>>()["headers"]
+                    .CastAs<IDictionary<string, string>>()["CC"];
 
-                cc.ShouldEqual(recipient1.Address.Email + ", " + recipient3.Address.Email);
+                Assert.Equal(recipient1.Address.Email + ", " + recipient3.Address.Email, cc);
             }
-            
-            [TestCase(true)]
-            [TestCase(false)]
+
+            [Theory]
+            [InlineData(true)]
+            [InlineData(false)]
             public void It_should_not_overwrite_any_existing_headers(bool useTo)
             {
                 var key = Guid.NewGuid().ToString();
                 var value = Guid.NewGuid().ToString();
 
-                var recipient1 = new Recipient {Type = RecipientType.CC, Address = new Address {Email = Guid.NewGuid().ToString()}};
+                var recipient1 = new Recipient { Type = RecipientType.CC, Address = new Address { Email = Guid.NewGuid().ToString() } };
                 var recipient2 = useTo
                         ? new Recipient { Type = RecipientType.To, Address = new Address() }
                         : new Recipient();
-                transmission.Recipients = new List<Recipient> {recipient1, recipient2};
+                transmission.Recipients = new List<Recipient> { recipient1, recipient2 };
 
                 transmission.Content.Headers[key] = value;
 
-                 mapper.ToDictionary(transmission)
-                    ["content"]
-                    .CastAs<IDictionary<string, object>>()
-                    ["headers"]
-                    .CastAs<IDictionary<string, string>>()
-                    [key].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(transmission)["content"]
+                   .CastAs<IDictionary<string, object>>()["headers"]
+                   .CastAs<IDictionary<string, string>>()[key]);
             }
 
-            [TestCase(true)]
-            [TestCase(false)]
+            [Theory]
+            [InlineData(true)]
+            [InlineData(false)]
             public void It_should_not_set_the_cc_if_there_are_no_cc_emails(bool useTo)
             {
                 var key = Guid.NewGuid().ToString();
@@ -390,75 +366,68 @@ namespace SparkPost.Tests
                 var recipient1 = useTo
                         ? new Recipient { Type = RecipientType.To, Address = new Address { Email = Guid.NewGuid().ToString() } }
                         : new Recipient();
-                var recipient2 = new Recipient {Type = RecipientType.BCC, Address = new Address {Email = Guid.NewGuid().ToString()}};
+                var recipient2 = new Recipient { Type = RecipientType.BCC, Address = new Address { Email = Guid.NewGuid().ToString() } };
                 var recipient3 = new Recipient { Type = RecipientType.BCC, Address = new Address { Email = Guid.NewGuid().ToString() } };
-                transmission.Recipients = new List<Recipient> {recipient1, recipient2, recipient3};
+                transmission.Recipients = new List<Recipient> { recipient1, recipient2, recipient3 };
 
                 transmission.Content.Headers[key] = value;
 
-                 mapper.ToDictionary(transmission)
-                    ["content"]
-                    .CastAs<IDictionary<string, object>>()
-                    ["headers"]
-                    .CastAs<IDictionary<string, string>>()
-                    .ContainsKey("CC")
-                    .ShouldBeFalse();
+                Assert.False(mapper.ToDictionary(transmission)["content"]
+                   .CastAs<IDictionary<string, object>>()["headers"]
+                   .CastAs<IDictionary<string, string>>().ContainsKey("CC"));
             }
 
-            [TestCase(true)]
-            [TestCase(false)]
+            [Theory]
+            [InlineData(true)]
+            [InlineData(false)]
             public void It_should_not_set_a_header_value_if_there_are_no_ccs(bool useTo)
             {
                 var recipient1 = useTo
                         ? new Recipient { Type = RecipientType.To, Address = new Address { Email = Guid.NewGuid().ToString() } }
                         : new Recipient();
-                var recipient2 = new Recipient {Type = RecipientType.BCC, Address = new Address {Email = Guid.NewGuid().ToString()}};
-                transmission.Recipients = new List<Recipient> {recipient1, recipient2};
+                var recipient2 = new Recipient { Type = RecipientType.BCC, Address = new Address { Email = Guid.NewGuid().ToString() } };
+                transmission.Recipients = new List<Recipient> { recipient1, recipient2 };
 
-                 mapper.ToDictionary(transmission)
-                    ["content"]
-                    .CastAs<IDictionary<string, object>>()
-                    .ContainsKey("headers")
-                    .ShouldBeFalse();
+                Assert.False(mapper.ToDictionary(transmission)["content"]
+                   .CastAs<IDictionary<string, object>>()
+                   .ContainsKey("headers"));
             }
 
-            [TestCase(true)]
-            [TestCase(false)]
+            [Theory]
+            [InlineData(true)]
+            [InlineData(false)]
             public void It_should_ignore_empty_ccs(bool useTo)
             {
-                var recipient1 = new Recipient {Type = RecipientType.CC, Address = new Address {Email = ""}};
-                var recipient2 = new Recipient {Type = RecipientType.CC, Address = new Address {Email = null}};
-                var recipient3 = new Recipient {Type = RecipientType.CC, Address = new Address {Email = " "}};
+                var recipient1 = new Recipient { Type = RecipientType.CC, Address = new Address { Email = "" } };
+                var recipient2 = new Recipient { Type = RecipientType.CC, Address = new Address { Email = null } };
+                var recipient3 = new Recipient { Type = RecipientType.CC, Address = new Address { Email = " " } };
                 var toRecipient = useTo
                         ? new Recipient { Type = RecipientType.To, Address = new Address() }
                         : new Recipient();
-                transmission.Recipients = new List<Recipient> {recipient1, recipient2, recipient3, toRecipient};
+                transmission.Recipients = new List<Recipient> { recipient1, recipient2, recipient3, toRecipient };
 
-                 mapper.ToDictionary(transmission)
-                    ["content"]
-                    .CastAs<IDictionary<string, object>>()
-                    .ContainsKey("headers")
-                    .ShouldBeFalse();
+                Assert.False(mapper.ToDictionary(transmission)["content"]
+                   .CastAs<IDictionary<string, object>>().ContainsKey("headers"));
             }
 
-            [TestCase(true)]
-            [TestCase(false)]
+            [Theory]
+            [InlineData(true)]
+            [InlineData(false)]
             public void It_should_ignore_any_cc_recipients_with_no_address(bool useTo)
             {
-                var recipient1 = new Recipient {Type = RecipientType.CC, Address = null};
+                var recipient1 = new Recipient { Type = RecipientType.CC, Address = null };
                 var toRecipient = useTo
                         ? new Recipient { Type = RecipientType.To, Address = new Address() }
                         : new Recipient();
-                transmission.Recipients = new List<Recipient> {recipient1, toRecipient};
+                transmission.Recipients = new List<Recipient> { recipient1, toRecipient };
 
-                 mapper.ToDictionary(transmission)
-                    ["content"]
-                    .CastAs<IDictionary<string, object>>()
-                    .ContainsKey("headers")
-                    .ShouldBeFalse();
+                Assert.False(mapper.ToDictionary(transmission)
+                   ["content"]
+                   .CastAs<IDictionary<string, object>>()
+                   .ContainsKey("headers"));
             }
 
-            [Test]
+            [Fact]
             public void It_should_set_the_name_and_header_to_fields()
             {
                 var toName = Guid.NewGuid().ToString();
@@ -477,50 +446,45 @@ namespace SparkPost.Tests
 
                 foreach (var address in addresses)
                 {
-                    address["name"].ShouldEqual(toName);
-                    address["header_to"].ShouldEqual(toEmail);
+                    Assert.Equal(toName, address["name"]);
+                    Assert.Equal(toEmail, address["header_to"]);
                 }
             }
 
-            [TestCase("Bob Jones", "bob@jones.com", "Bob Jones <bob@jones.com>")]
-            [TestCase(null, "bob@jones.com", "bob@jones.com")]
-            [TestCase("", "bob@jones.com", "bob@jones.com")]
-            [TestCase("Jones, Bob", "bob@jones.com", "\"Jones, Bob\" <bob@jones.com>")]
+            [Theory]
+            [InlineData("Bob Jones", "bob@jones.com", "Bob Jones <bob@jones.com>")]
+            [InlineData(null, "bob@jones.com", "bob@jones.com")]
+            [InlineData("", "bob@jones.com", "bob@jones.com")]
+            [InlineData("Jones, Bob", "bob@jones.com", "\"Jones, Bob\" <bob@jones.com>")]
             public void It_should_format_addresses_correctly(string name, string address, string result)
             {
                 var recipient1 = new Recipient { Type = RecipientType.To, Address = new Address() };
                 var recipient2 = new Recipient { Type = RecipientType.CC, Address = new Address(address, name) };
                 transmission.Recipients = new List<Recipient> { recipient1, recipient2 };
 
-                mapper.ToDictionary(transmission)
-                    ["content"]
-                    .CastAs<IDictionary<string, object>>()
-                    ["headers"]
-                    .CastAs<IDictionary<string, string>>()
-                    ["CC"]
-                    .ShouldEqual(result);
+                Assert.Equal(result, mapper.ToDictionary(transmission)["content"]
+                    .CastAs<IDictionary<string, object>>()["headers"]
+                    .CastAs<IDictionary<string, string>>()["CC"]);
             }
 
-            [TestCase("Jones, Bob", "bob@jones.com ", "\"Jones, Bob\" <bob@jones.com>")]
-            [TestCase("Jones, Bob", " bob@jones.com", "\"Jones, Bob\" <bob@jones.com>")]
+            [Theory]
+            [InlineData("Jones, Bob", "bob@jones.com ", "\"Jones, Bob\" <bob@jones.com>")]
+            [InlineData("Jones, Bob", " bob@jones.com", "\"Jones, Bob\" <bob@jones.com>")]
             public void It_should_handle_white_space_in_the_email(string name, string address, string result)
             {
                 var recipient1 = new Recipient { Type = RecipientType.To, Address = new Address() };
                 var recipient2 = new Recipient { Type = RecipientType.CC, Address = new Address(address, name) };
                 transmission.Recipients = new List<Recipient> { recipient1, recipient2 };
 
-                mapper.ToDictionary(transmission)
-                    ["content"]
-                    .CastAs<IDictionary<string, object>>()
-                    ["headers"]
-                    .CastAs<IDictionary<string, string>>()
-                    ["CC"]
-                    .ShouldEqual(result);
+                Assert.Equal(result, mapper.ToDictionary(transmission)["content"]
+                    .CastAs<IDictionary<string, object>>()["headers"]
+                    .CastAs<IDictionary<string, string>>()["CC"]);
             }
 
-            [TestCase(0)]
-            [TestCase(1)]
-            [TestCase(2)]
+            [Theory]
+            [InlineData(0)]
+            [InlineData(1)]
+            [InlineData(2)]
             public void It_should_use_new_or_legacy_handling(int numOfTos)
             {
                 var ccAddress = Guid.NewGuid().ToString();
@@ -531,51 +495,47 @@ namespace SparkPost.Tests
                     transmission.Recipients.Add(new Recipient { Type = RecipientType.To, Address = new Address("bob@example.com") });
                 }
 
-                var ccHeader = mapper.ToDictionary(transmission)
-                    ["content"]
-                    .CastAs<IDictionary<string, object>>()
-                    ["headers"]
-                    .CastAs<IDictionary<string, string>>()
-                    ["CC"];
+                var ccHeader = mapper.ToDictionary(transmission)["content"]
+                    .CastAs<IDictionary<string, object>>()["headers"]
+                    .CastAs<IDictionary<string, string>>()["CC"];
 
                 if (numOfTos == 1)
-                    ccHeader.ShouldEqual(ccAddress);
+                {
+                    Assert.Equal(ccAddress, ccHeader);
+                }
                 else
-                    ccHeader.ShouldEqual($"<{ccAddress}>");
+                {
+                    Assert.Equal($"<{ccAddress}>", ccHeader);
+                }
             }
 
-            [Test]
+            [Fact]
             public void It_should_use_legacy_handling_if_to_address_is_null()
             {
                 var ccAddress = Guid.NewGuid().ToString();
                 transmission.Recipients.Add(new Recipient { Type = RecipientType.CC, Address = new Address(ccAddress) });
                 transmission.Recipients.Add(new Recipient { Type = RecipientType.To, Address = null });
-                
-                var ccHeader = mapper.ToDictionary(transmission)
-                    ["content"]
-                    .CastAs<IDictionary<string, object>>()
-                    ["headers"]
-                    .CastAs<IDictionary<string, string>>()
-                    ["CC"];
 
-                ccHeader.ShouldEqual($"<{ccAddress}>");
+                var ccHeader = mapper.ToDictionary(transmission)["content"]
+                    .CastAs<IDictionary<string, object>>()["headers"]
+                    .CastAs<IDictionary<string, string>>()["CC"];
+
+                Assert.Equal($"<{ccAddress}>", ccHeader);
             }
         }
 
-        [TestFixture]
         public class ContentMappingTests
         {
-            [SetUp]
-            public void Setup()
+            private readonly Content content;
+            private readonly DataMapper mapper;
+
+            public ContentMappingTests()
             {
                 content = new Content();
                 mapper = new DataMapper("v1");
             }
-
-            private Content content;
-            private DataMapper mapper;
-
-            [Test]
+            
+            [Fact]
             public void from()
             {
                 content.From.Email = Guid.NewGuid().ToString();
@@ -584,70 +544,68 @@ namespace SparkPost.Tests
 
                 var result = mapper.ToDictionary(content)["from"].CastAs<IDictionary<string, object>>();
 
-                result["email"].ShouldEqual(content.From.Email);
-                result["header_to"].ShouldEqual(content.From.HeaderTo);
-                result["name"].ShouldEqual(content.From.Name);
+                Assert.Equal(content.From.Email, result["email"]);
+                Assert.Equal(content.From.HeaderTo, result["header_to"]);
+                Assert.Equal(content.From.Name, result["name"]);
             }
 
-            [Test]
+            [Fact]
             public void subject()
             {
                 var value = Guid.NewGuid().ToString();
                 content.Subject = value;
-                mapper.ToDictionary(content)["subject"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(content)["subject"]);
             }
 
-            [Test]
+            [Fact]
             public void text()
             {
                 var value = Guid.NewGuid().ToString();
                 content.Text = value;
-                mapper.ToDictionary(content)["text"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(content)["text"]);
             }
 
-            [Test]
+            [Fact]
             public void template_id()
             {
                 var value = Guid.NewGuid().ToString();
                 content.TemplateId = value;
-                mapper.ToDictionary(content)["template_id"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(content)["template_id"]);
             }
 
-            [Test]
+            [Fact]
             public void html()
             {
                 var value = Guid.NewGuid().ToString();
                 content.Html = value;
-                mapper.ToDictionary(content)["html"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(content)["html"]);
             }
 
-            [Test]
+            [Fact]
             public void reply_to()
             {
                 var value = Guid.NewGuid().ToString();
                 content.ReplyTo = value;
-                mapper.ToDictionary(content)["reply_to"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(content)["reply_to"]);
             }
 
-            [Test]
+            [Fact]
             public void headers()
             {
                 var key = Guid.NewGuid().ToString();
                 var value = Guid.NewGuid().ToString();
                 content.Headers[key] = value;
-                mapper.ToDictionary(content)["headers"]
-                    .CastAs<IDictionary<string, string>>()
-                    [key].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(content)["headers"]
+                    .CastAs<IDictionary<string, string>>()[key]);
             }
 
-            [Test]
+            [Fact]
             public void do_not_include_empty_headers()
             {
-                mapper.ToDictionary(content)
-                    .Keys.ShouldNotContain("headers");
+                Assert.DoesNotContain("headers", mapper.ToDictionary(content).Keys);
             }
 
-            [Test]
+            [Fact]
             public void attachments()
             {
                 var firstName = Guid.NewGuid().ToString();
@@ -660,18 +618,18 @@ namespace SparkPost.Tests
                     .Select(x => x.CastAs<Dictionary<string, object>>())
                     .Select(x => x["name"]);
 
-                names.Count().ShouldEqual(2);
-                names.ShouldContain(firstName);
-                names.ShouldContain(secondName);
+                Assert.Equal(2, names.Count());
+                Assert.Contains(firstName, names);
+                Assert.Contains(secondName, names);
             }
 
-            [Test]
+            [Fact]
             public void no_attachments_should_not_include_the_attachments_block()
             {
-                mapper.ToDictionary(content).Keys.ShouldNotContain("attachments");
+                Assert.DoesNotContain("attachments", mapper.ToDictionary(content).Keys);
             }
 
-            [Test]
+            [Fact]
             public void inline_images()
             {
                 var firstName = Guid.NewGuid().ToString();
@@ -685,220 +643,213 @@ namespace SparkPost.Tests
                     .Select(x => x.CastAs<Dictionary<string, object>>())
                     .Select(x => x["name"]);
 
-                names.Count().ShouldEqual(2);
-                names.ShouldContain(firstName);
-                names.ShouldContain(secondName);
+                Assert.Equal(2, names.Count());
+                Assert.Contains(firstName, names);
+                Assert.Contains(secondName, names);
             }
 
-            [Test]
+            [Fact]
             public void no_inline_images_should_not_include_the_inline_images_block()
             {
-                mapper.ToDictionary(content).Keys.ShouldNotContain("inline_images");
+                Assert.DoesNotContain("inline_images", mapper.ToDictionary(content).Keys);
             }
         }
 
-        [TestFixture]
         public class OptionsMappingTests
         {
-            [SetUp]
-            public void Setup()
+            private readonly DataMapper mapper;
+            private readonly Options options;
+
+            public OptionsMappingTests()
             {
                 options = new Options();
                 mapper = new DataMapper("v1");
             }
-
-            private DataMapper mapper;
-            private Options options;
-
-            [Test]
+            
+            [Fact]
             public void It_should_default_to_returning_null()
             {
-                mapper.ToDictionary(options).ShouldBeNull();
+                Assert.Null(mapper.ToDictionary(options));
             }
 
-            [Test]
+            [Fact]
             public void open_tracking()
             {
                 options.OpenTracking = true;
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["open_tracking"].ShouldEqual(true);
+                Assert.True((bool)mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["open_tracking"]);
 
                 options.OpenTracking = false;
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["open_tracking"].ShouldEqual(false);
+                Assert.False((bool)mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["open_tracking"]);
             }
 
-            [Test]
+            [Fact]
             public void click_tracking()
             {
                 options.ClickTracking = true;
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["click_tracking"].ShouldEqual(true);
+                Assert.True((bool)mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["click_tracking"]);
 
                 options.ClickTracking = false;
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["click_tracking"].ShouldEqual(false);
+                Assert.False((bool)mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["click_tracking"]);
             }
 
-            [Test]
+            [Fact]
             public void transactional()
             {
                 options.Transactional = true;
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["transactional"].ShouldEqual(true);
+                Assert.True((bool)mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["transactional"]);
 
                 options.Transactional = false;
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["transactional"].ShouldEqual(false);
+                Assert.False((bool)mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["transactional"]);
             }
 
-            [Test]
+            [Fact]
             public void sandbox()
             {
                 options.Sandbox = true;
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["sandbox"].ShouldEqual(true);
+                Assert.True((bool)mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["sandbox"]);
 
                 options.Sandbox = false;
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["sandbox"].ShouldEqual(false);
+                Assert.False((bool)mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["sandbox"]);
             }
 
-            [Test]
+            [Fact]
             public void skip_suppression()
             {
                 options.SkipSuppression = true;
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["skip_suppression"].ShouldEqual(true);
+                Assert.True((bool)mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["skip_suppression"]);
 
                 options.SkipSuppression = false;
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["skip_suppression"].ShouldEqual(false);
+                Assert.False((bool)mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["skip_suppression"]);
             }
 
-            [Test]
+            [Fact]
             public void start_time()
             {
                 var startTime = "2015-02-11T08:00:00-04:00";
                 options.StartTime = DateTimeOffset.Parse(startTime);
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["start_time"].ShouldEqual(startTime);
+                Assert.Equal(startTime, mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["start_time"]);
 
                 startTime = "2015-02-11T08:00:00-14:00";
                 options.StartTime = DateTimeOffset.Parse(startTime);
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["start_time"].ShouldEqual(startTime);
+                Assert.Equal(startTime, mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["start_time"]);
             }
 
-            [Test]
+            [Fact]
             public void hide_start_time_if_it_is_missing()
             {
                 options.OpenTracking = true;
-                mapper.ToDictionary(options)
-                    .CastAs<IDictionary<string, object>>()
-                    .Keys.ShouldNotContain("start_time");
+                Assert.DoesNotContain("start_time", mapper.ToDictionary(options)
+                    .CastAs<IDictionary<string, object>>().Keys);
             }
 
-            [Test]
+            [Fact]
             public void inline_css()
             {
                 options.InlineCss = true;
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["inline_css"].ShouldEqual(true);
+                Assert.True((bool)mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["inline_css"]);
 
                 options.InlineCss = false;
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["inline_css"].ShouldEqual(false);
+                Assert.False((bool)mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["inline_css"]);
             }
 
-            [Test]
+            [Fact]
             public void ip_pool()
             {
                 var ipPool = Guid.NewGuid().ToString();
                 options.IpPool = ipPool;
-                mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
-                    ["ip_pool"].ShouldEqual(ipPool);
+                Assert.Equal(ipPool, mapper.ToDictionary(options).CastAs<IDictionary<string, object>>()
+                    ["ip_pool"]);
             }
         }
 
-        [TestFixture]
         public class FileMappingTests
         {
             private File file;
             private DataMapper mapper;
 
-            [SetUp]
-            public void Setup()
+            public FileMappingTests()
             {
                 file = new Attachment();
                 mapper = new DataMapper("v1");
             }
 
-            [Test]
+            [Fact]
             public void name()
             {
                 var value = Guid.NewGuid().ToString();
                 file.Name = value;
-                mapper.ToDictionary(file)["name"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(file)["name"]);
             }
 
-            [Test]
+            [Fact]
             public void type()
             {
                 var value = Guid.NewGuid().ToString();
                 file.Type = value;
-                mapper.ToDictionary(file)["type"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(file)["type"]);
             }
 
-            [Test]
+            [Fact]
             public void data()
             {
                 var value = Guid.NewGuid().ToString();
                 file.Data = value;
-                mapper.ToDictionary(file)["data"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(file)["data"]);
             }
         }
 
-        [TestFixture]
         public class WebhookTests
         {
             private DataMapper dataMapper;
 
-            [SetUp]
-            public void Setup()
+            public WebhookTests()
             {
                 dataMapper = new DataMapper();
             }
 
-            [Test]
+            [Fact]
             public void Name()
             {
-                var webhook = new Webhook {Name = Guid.NewGuid().ToString()};
-                dataMapper.ToDictionary(webhook)["name"].ShouldEqual(webhook.Name);
+                var webhook = new Webhook { Name = Guid.NewGuid().ToString() };
+                Assert.Equal(webhook.Name, dataMapper.ToDictionary(webhook)["name"]);
             }
 
-            [Test]
+            [Fact]
             public void Target()
             {
-                var webhook = new Webhook {Target = Guid.NewGuid().ToString()};
-                dataMapper.ToDictionary(webhook)["target"].ShouldEqual(webhook.Target);
+                var webhook = new Webhook { Target = Guid.NewGuid().ToString() };
+                Assert.Equal(webhook.Target, dataMapper.ToDictionary(webhook)["target"]);
             }
 
-            [Test]
+            [Fact]
             public void AuthType()
             {
-                var webhook = new Webhook {AuthType = Guid.NewGuid().ToString()};
-                dataMapper.ToDictionary(webhook)["auth_type"].ShouldEqual(webhook.AuthType);
+                var webhook = new Webhook { AuthType = Guid.NewGuid().ToString() };
+                Assert.Equal(webhook.AuthType, dataMapper.ToDictionary(webhook)["auth_type"]);
             }
 
-            [Test]
+            [Fact]
             public void AuthToken()
             {
-                var webhook = new Webhook {AuthToken = Guid.NewGuid().ToString()};
-                dataMapper.ToDictionary(webhook)["auth_token"].ShouldEqual(webhook.AuthToken);
+                var webhook = new Webhook { AuthToken = Guid.NewGuid().ToString() };
+                Assert.Equal(webhook.AuthToken, dataMapper.ToDictionary(webhook)["auth_token"]);
             }
 
-            [Test]
+            [Fact]
             public void Events()
             {
                 var first = Guid.NewGuid().ToString();
@@ -910,12 +861,12 @@ namespace SparkPost.Tests
 
                 var dictionary = dataMapper.ToDictionary(webhook);
                 var events = dictionary["events"] as IEnumerable<object>;
-                events.Count().ShouldEqual(2);
-                events.ShouldContain(first);
-                events.ShouldContain(second);
+                Assert.Equal(2, events.Count());
+                Assert.Contains(first, events);
+                Assert.Contains(second, events);
             }
 
-            [Test]
+            [Fact]
             public void AuthRequestDetails()
             {
                 var webhook = new Webhook
@@ -923,26 +874,24 @@ namespace SparkPost.Tests
                     AuthRequestDetails = new
                     {
                         Url = "https://oauth.myurl.com/tokens",
-                        Body = new {ClientId = "<oauth client id>", ClientSecret = "<oauth client secret>"}
+                        Body = new { ClientId = "<oauth client id>", ClientSecret = "<oauth client secret>" }
                     }
                 };
 
                 var dictionary = dataMapper.ToDictionary(webhook);
                 var authRequestDetails = dictionary["auth_request_details"].CastAs<IDictionary<string, object>>();
-                authRequestDetails["url"].ShouldEqual("https://oauth.myurl.com/tokens");
+                Assert.Equal("https://oauth.myurl.com/tokens", authRequestDetails["url"]);
 
-                authRequestDetails["body"]
+                Assert.Equal("<oauth client id>", authRequestDetails["body"]
                     .CastAs<IDictionary<string, object>>()
-                    ["client_id"]
-                    .ShouldEqual("<oauth client id>");
+                    ["client_id"]);
 
-                authRequestDetails["body"]
+                Assert.Equal("<oauth client secret>", authRequestDetails["body"]
                     .CastAs<IDictionary<string, object>>()
-                    ["client_secret"]
-                    .ShouldEqual("<oauth client secret>");
+                    ["client_secret"]);
             }
 
-            [Test]
+            [Fact]
             public void AuthCredentials()
             {
                 var webhook = new Webhook
@@ -956,284 +905,275 @@ namespace SparkPost.Tests
 
                 var dictionary = dataMapper.ToDictionary(webhook);
                 var authRequestDetails = dictionary["auth_credentials"] as Dictionary<string, object>;
-                authRequestDetails["access_token"].ShouldEqual("<oauth token>");
-                authRequestDetails["expires_in"].ShouldEqual(3600);
+                Assert.Equal("<oauth token>", authRequestDetails["access_token"]);
+                Assert.Equal(3600, authRequestDetails["expires_in"]);
             }
         }
 
 
-        [TestFixture]
         public class SubaccountTests
         {
-            private DataMapper dataMapper;
+            private readonly DataMapper dataMapper;
 
-            [SetUp]
-            public void Setup()
+            public SubaccountTests()
             {
                 dataMapper = new DataMapper();
             }
 
-            [Test]
+            [Fact]
             public void Id()
             {
                 var subaccount = new Subaccount { Id = 432 };
-                dataMapper.ToDictionary(subaccount)["id"].ShouldEqual(subaccount.Id);
+                Assert.Equal(subaccount.Id, dataMapper.ToDictionary(subaccount)["id"]);
             }
 
-            [Test]
+            [Fact]
             public void Name()
             {
                 var subaccount = new Subaccount { Name = Guid.NewGuid().ToString() };
-                dataMapper.ToDictionary(subaccount)["name"].ShouldEqual(subaccount.Name);
+                Assert.Equal(subaccount.Name, dataMapper.ToDictionary(subaccount)["name"]);
             }
 
-            [Test]
+            [Fact]
             public void Status()
             {
                 var subaccount = new Subaccount { Status = SubaccountStatus.Terminated };
-                dataMapper.ToDictionary(subaccount)["status"].ShouldEqual(SubaccountStatus.Terminated.ToString().ToLowerInvariant());
+                Assert.Equal(SubaccountStatus.Terminated.ToString().ToLowerInvariant(), dataMapper.ToDictionary(subaccount)["status"]);
             }
 
-            [Test]
+            [Fact]
             public void IpPool()
             {
                 var subaccount = new Subaccount { IpPool = Guid.NewGuid().ToString() };
-                dataMapper.ToDictionary(subaccount)["ip_pool"].ShouldEqual(subaccount.IpPool);
+                Assert.Equal(subaccount.IpPool, dataMapper.ToDictionary(subaccount)["ip_pool"]);
             }
 
-            [Test]
+            [Fact]
             public void ComplianceStatus()
             {
                 var subaccount = new Subaccount { ComplianceStatus = Guid.NewGuid().ToString() };
-                dataMapper.ToDictionary(subaccount)["compliance_status"].ShouldEqual(subaccount.ComplianceStatus);
+                Assert.Equal(subaccount.ComplianceStatus, dataMapper.ToDictionary(subaccount)["compliance_status"]);
             }
         }
 
-        [TestFixture]
         public class AnythingTests
         {
-            [Test]
+            [Fact]
             public void It_should_map_anything_using_our_conventions()
             {
                 var dataMapper = new DataMapper();
 
                 var dateTime = new DateTime(2016, 1, 2, 3, 4, 5);
 
-                var result = dataMapper.CatchAll(new {FirstName = "Test1", LastName = "Test2", TheDate = dateTime});
+                var result = dataMapper.CatchAll(new { FirstName = "Test1", LastName = "Test2", TheDate = dateTime });
 
-                result["first_name"].ShouldEqual("Test1");
-                result["last_name"].ShouldEqual("Test2");
-                ((string)result["the_date"]).Substring(0, 16).ShouldEqual("2016-01-02T03:04");
+                Assert.Equal("Test1", result["first_name"]);
+                Assert.Equal("Test2", result["last_name"]);
+                Assert.Equal("2016-01-02T03:04", ((string)result["the_date"]).Substring(0, 16));
             }
         }
 
-        [TestFixture]
         public class RelayWebhookTests
         {
-            [SetUp]
-            public void Setup()
+            private readonly RelayWebhook relayWebhook;
+            private readonly DataMapper mapper;
+
+            public RelayWebhookTests()
             {
                 relayWebhook = new RelayWebhook();
                 mapper = new DataMapper("v1");
             }
 
-            private RelayWebhook relayWebhook;
-            private DataMapper mapper;
-
-            [Test]
+            [Fact]
             public void name()
             {
                 var value = Guid.NewGuid().ToString();
                 relayWebhook.Name = value;
-                mapper.ToDictionary(relayWebhook)["name"].ShouldEqual(value);
+                Assert.Equal(value, mapper.ToDictionary(relayWebhook)["name"]);
             }
 
-            [Test]
+            [Fact]
             public void match_domain()
             {
                 var value = Guid.NewGuid().ToString();
-                relayWebhook.Match = new RelayWebhookMatch {Domain = value};
-                mapper.ToDictionary(relayWebhook)["match"]
-                    .CastAs<IDictionary<string, object>>()
-                    ["domain"].ShouldEqual(value);
+                relayWebhook.Match = new RelayWebhookMatch { Domain = value };
+                Assert.Equal(value, mapper.ToDictionary(relayWebhook)["match"]
+                    .CastAs<IDictionary<string, object>>()["domain"]);
             }
 
-            [Test]
+            [Fact]
             public void match_protocol()
             {
                 var value = Guid.NewGuid().ToString();
-                relayWebhook.Match = new RelayWebhookMatch {Protocol = value};
-                mapper.ToDictionary(relayWebhook)["match"]
-                    .CastAs<IDictionary<string, object>>()
-                    ["protocol"].ShouldEqual(value);
+                relayWebhook.Match = new RelayWebhookMatch { Protocol = value };
+                Assert.Equal(value, mapper.ToDictionary(relayWebhook)["match"]
+                    .CastAs<IDictionary<string, object>>()["protocol"]);
             }
         }
 
-        [TestFixture]
         public class SendingDomainTests
         {
-            private DataMapper mapper;
-            private SendingDomain sendingDomain;
+            private readonly DataMapper mapper;
+            private readonly SendingDomain sendingDomain;
 
-            [SetUp]
-            public void Setup()
+            public SendingDomainTests()
             {
                 sendingDomain = new SendingDomain();
                 mapper = new DataMapper("v1");
             }
 
-            [Test]
+            [Fact]
             public void Matches_on_status()
             {
                 sendingDomain.Status = new SendingDomainStatus();
                 sendingDomain.Status.DkimStatus = DkimStatus.Pending;
-                mapper.ToDictionary(sendingDomain)["status"]
+
+                Assert.Equal("pending", mapper.ToDictionary(sendingDomain)["status"]
                     .CastAs<IDictionary<string, object>>()
-                    ["dkim_status"]
-                    .CastAs<string>()
-                    .ShouldEqual("pending");
+                    ["dkim_status"]);
             }
 
-            [Test]
+            [Fact]
             public void Null_status_return_null()
             {
                 sendingDomain.Status = null;
                 var dictionary = mapper.ToDictionary(sendingDomain);
-                dictionary
-                    .ContainsKey("status")
-                    .ShouldBeFalse();
+                Assert.False(dictionary.ContainsKey("status"));
             }
 
-            [Test]
+            [Fact]
             public void Matches_on_dkim()
             {
                 var publicKey = Guid.NewGuid().ToString();
                 sendingDomain.Dkim = new Dkim { PublicKey = publicKey };
-                mapper.ToDictionary(sendingDomain)["dkim"]
-                    .CastAs<IDictionary<string, object>>()
-                    ["public_key"]
-                    .CastAs<string>()
-                    .ShouldEqual(publicKey);
+                Assert.Equal(publicKey, mapper.ToDictionary(sendingDomain)["dkim"]
+                                              .CastAs<IDictionary<string, object>>()
+                                              ["public_key"]);
             }
 
-            [Test]
+            [Fact]
             public void Null_dkim_is_is_not_returned()
             {
                 sendingDomain.Dkim = null;
-                mapper.ToDictionary(sendingDomain)
-                    .ContainsKey("dkim")
-                    .ShouldBeFalse();
+                Assert.False(mapper.ToDictionary(sendingDomain)
+                    .ContainsKey("dkim"));
             }
         }
 
-        [TestFixture]
         public class MetricsQueryTests
         {
-            private DataMapper _mapper;
-            private MetricsQuery _query;
+            private readonly DataMapper _mapper;
+            private readonly MetricsQuery _query;
             private string _timeFormat = "yyyy-MM-ddTHH:mm";
 
-            [SetUp]
-            public void Setup()
+            public MetricsQueryTests()
             {
                 _query = new MetricsQuery();
                 _mapper = new DataMapper("v1");
             }
 
-            [Test]
+            [Fact]
             public void from()
             {
                 var from = DateTime.Parse("2013-11-29 14:26");
                 _query.From = from;
                 var dict = _mapper.CatchAll(_query);
-                Assert.That(dict["from"].CastTo<string>(), Is.EqualTo(from.ToString(_timeFormat)));
+                Assert.Equal(from.ToString(_timeFormat), dict["from"]);
             }
 
-            [Test]
+            [Fact]
             public void to()
             {
                 var to = DateTime.Parse("2003-08-13 12:15");
                 _query.To = to;
                 var dict = _mapper.CatchAll(_query);
-                Assert.That(dict["to"].CastTo<string>(), Is.EqualTo(to.ToString(_timeFormat)));
+                Assert.Equal(to.ToString(_timeFormat), dict["to"]);
             }
 
-            [Test]
+            [Fact]
             public void timezone()
             {
                 var tz = Guid.NewGuid().ToString();
                 _query.Timezone = tz;
                 var dict = _mapper.CatchAll(_query);
-                Assert.That(dict["timezone"].CastTo<string>(), Is.EqualTo(tz));
+                Assert.Equal(tz, dict["timezone"]);
             }
 
-            [Test]
+            [Fact]
             public void precision()
             {
                 var p = Guid.NewGuid().ToString();
                 _query.Precision = p;
                 var dict = _mapper.CatchAll(_query);
-                Assert.That(dict["precision"].CastTo<string>(), Is.EqualTo(p));
+                Assert.Equal(p, dict["precision"]);
             }
 
-            [TestCase("apple")]
-            [TestCase("apple", "banana", "carrot")]
+            [Theory]
+            [InlineData("apple")]
+            [InlineData("apple", "banana", "carrot")]
             public void campaigns(params string[] list)
             {
                 _query.Campaigns = list;
                 CheckList(list, "campaigns");
             }
 
-            [TestCase("apple")]
-            [TestCase("apple", "banana", "carrot")]
+            [Theory]
+            [InlineData("apple")]
+            [InlineData("apple", "banana", "carrot")]
             public void domains(params string[] list)
             {
                 _query.Domains = list;
                 CheckList(list, "domains");
             }
 
-            [TestCase("apple")]
-            [TestCase("apple", "banana", "carrot")]
+            [Theory]
+            [InlineData("apple")]
+            [InlineData("apple", "banana", "carrot")]
             public void templates(params string[] list)
             {
                 _query.Templates = list;
                 CheckList(list, "templates");
             }
 
-            [TestCase("apple")]
-            [TestCase("apple", "banana", "carrot")]
+            [Theory]
+            [InlineData("apple")]
+            [InlineData("apple", "banana", "carrot")]
             public void sendingips(params string[] list)
             {
                 _query.SendingIps = list;
                 CheckList(list, "sending_ips");
             }
 
-            [TestCase("apple")]
-            [TestCase("apple", "banana", "carrot")]
+            [Theory]
+            [InlineData("apple")]
+            [InlineData("apple", "banana", "carrot")]
             public void ippools(params string[] list)
             {
                 _query.IpPools = list;
                 CheckList(list, "ip_pools");
             }
 
-            [TestCase("apple")]
-            [TestCase("apple", "banana", "carrot")]
+            [Theory]
+            [InlineData("apple")]
+            [InlineData("apple", "banana", "carrot")]
             public void sendingdomains(params string[] list)
             {
                 _query.SendingDomains = list;
                 CheckList(list, "sending_domains");
             }
 
-            [TestCase("apple")]
-            [TestCase("apple", "banana", "carrot")]
+            [Theory]
+            [InlineData("apple")]
+            [InlineData("apple", "banana", "carrot")]
             public void subaccounts(params string[] list)
             {
                 _query.Subaccounts = list;
                 CheckList(list, "subaccounts");
             }
 
-            [TestCase("apple")]
-            [TestCase("apple", "banana", "carrot")]
+            [Theory]
+            [InlineData("apple")]
+            [InlineData("apple", "banana", "carrot")]
             public void metrics(params string[] list)
             {
                 _query.Metrics = list;
@@ -1244,67 +1184,65 @@ namespace SparkPost.Tests
             {
                 var cat = String.Join(",", list);
                 var dict = _mapper.CatchAll(_query);
-                Assert.That(dict[k].CastTo<string>(), Is.EqualTo(cat));
+                Assert.Equal(cat, dict[k]);
             }
         }
 
-        [TestFixture]
         public class MetricsResourceQueryTests
         {
             private DataMapper _mapper;
             private MetricsResourceQuery _query;
             private string _timeFormat = "yyyy-MM-ddTHH:mm";
 
-            [SetUp]
-            public void Setup()
+            public MetricsResourceQueryTests()
             {
                 _query = new MetricsResourceQuery();
                 _mapper = new DataMapper("v1");
             }
 
-            [Test]
+            [Fact]
             public void from()
             {
                 var from = DateTime.Parse("2013-11-29 14:26");
                 _query.From = from;
                 var dict = _mapper.CatchAll(_query);
-                Assert.That(dict["from"].CastTo<string>(), Is.EqualTo(from.ToString(_timeFormat)));
+                Assert.Equal(from.ToString(_timeFormat), dict["from"]);
             }
 
-            [Test]
+            [Fact]
             public void to()
             {
                 var to = DateTime.Parse("2003-08-13 12:15");
                 _query.To = to;
                 var dict = _mapper.CatchAll(_query);
-                Assert.That(dict["to"].CastTo<string>(), Is.EqualTo(to.ToString(_timeFormat)));
+                Assert.Equal(to.ToString(_timeFormat), dict["to"]);
             }
 
-            [Test]
+            [Fact]
             public void timezone()
             {
                 var tz = Guid.NewGuid().ToString();
                 _query.Timezone = tz;
                 var dict = _mapper.CatchAll(_query);
-                Assert.That(dict["timezone"].CastTo<string>(), Is.EqualTo(tz));
+                Assert.Equal(tz, dict["timezone"]);
             }
 
-            [Test]
+            [Fact]
             public void match()
             {
                 var p = Guid.NewGuid().ToString();
                 _query.Match = p;
                 var dict = _mapper.CatchAll(_query);
-                Assert.That(dict["match"].CastTo<string>(), Is.EqualTo(p));
+                Assert.Equal(p, dict["match"]);
             }
 
-            [Test]
+            [Fact]
             public void limit()
             {
                 var r = new Random().Next();
                 _query.Limit = r;
                 var dict = _mapper.CatchAll(_query);
-                Assert.That(dict["limit"].CastTo<int>(), Is.EqualTo(r));
+                Assert.Equal(r, dict["limit"]);
             }
         }
     }

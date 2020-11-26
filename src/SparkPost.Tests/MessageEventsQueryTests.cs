@@ -1,59 +1,57 @@
-﻿using NUnit.Framework;
-using Should;
+﻿using Xunit;
 
 namespace SparkPost.Tests
 {
     public class MessageEventsQueryTests
     {
-        [TestFixture]
         public class Defaults
         {
-            [Test]
+            [Fact]
             public void It_should_have_a_default_build_list()
             {
-                new MessageEventsQuery().BounceClasses.ShouldNotBeNull();
+                Assert.NotNull(new MessageEventsQuery().BounceClasses);
             }
 
-            [Test]
-            public void It_should_have_a_defualt_campaign_ids_list()
+            [Fact]
+            public void It_should_have_a_default_campaign_ids_list()
             {
-                new MessageEventsQuery().CampaignIds.ShouldNotBeNull();
+                Assert.NotNull(new MessageEventsQuery().CampaignIds);
             }
 
-            [Test]
+            [Fact]
             public void It_should_have_a_default_friendly_froms_list()
             {
-                new MessageEventsQuery().FriendlyFroms.ShouldNotBeNull();
+                Assert.NotNull(new MessageEventsQuery().FriendlyFroms);
             }
 
-            [Test]
+            [Fact]
             public void It_should_have_a_default_message_ids_list()
             {
-                new MessageEventsQuery().MessageIds.ShouldNotBeNull();
+                Assert.NotNull(new MessageEventsQuery().MessageIds);
             }
 
-            [Test]
+            [Fact]
             public void It_should_have_a_recipients_list()
             {
-                new MessageEventsQuery().Recipients.ShouldNotBeNull();
+                Assert.NotNull(new MessageEventsQuery().Recipients);
             }
 
-            [Test]
+            [Fact]
             public void It_should_have_a_Subaccounts_list()
             {
-                new MessageEventsQuery().Subaccounts.ShouldNotBeNull();
+                Assert.NotNull(new MessageEventsQuery().Subaccounts);
             }
 
-            [Test]
+            [Fact]
             public void It_should_have_TemplateIds_list()
             {
-                new MessageEventsQuery().TemplateIds.ShouldNotBeNull();
+                Assert.NotNull(new MessageEventsQuery().TemplateIds);
             }
 
-            [Test]
+            [Fact]
             public void It_should_have_Transmissions_list()
             {
-                new MessageEventsQuery().TransmissionIds.ShouldNotBeNull();
+                Assert.NotNull(new MessageEventsQuery().TransmissionIds);
             }
 
         }

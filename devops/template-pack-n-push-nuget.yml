@@ -1,0 +1,35 @@
+parameters:
+  - name: PackageName
+    type: string
+    default: Unkown package
+  - name: PackageVersion
+    type: string
+  - name: PathToCsproj
+    type: string
+
+jobs:
+- job:
+  pool:
+    vmImage: ubuntu-20.04
+  steps:
+  - task: DotNetCoreCLI@2
+    displayName: dotnet pack '${{ parameters.PackageName }}'
+    inputs:
+      command: pack
+      packagesToPack: ${{ parameters.PathToCsproj }}
+      packDestination: $(Build.ArtifactStagingDirectory)
+      includesymbols: true
+      configuration: Release
+      versioningScheme: byEnvVar
+      versionEnvVar: PackageVersion # don't use variable templating at this point
+  - task: NuGetToolInstaller@1
+    displayName: Use NuGet 5.8.0
+    inputs:
+      versionSpec: 5.8.0
+  - task: NuGetCommand@2
+    displayName: NuGet push ${{ parameters.PackageName }}
+    inputs:
+      command: push
+      packagesToPush: $(Build.ArtifactStagingDirectory)/**/*.nupkg
+      publishVstsFeed: 290c149c-f38a-4877-85ef-a7eb6073d58b/6e88b6a2-4b29-4466-85e1-90a086c45d22
+      allowPackageConflicts: true

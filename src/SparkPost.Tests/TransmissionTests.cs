@@ -1,63 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using Moq;
-using NUnit.Framework;
-using Should;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.IO;
 using System.Text;
+using Xunit;
 
 namespace SparkPost.Tests
 {
     public class TransmissionTests
     {
-        [TestFixture]
         public class ConstructorTests
         {
-            [SetUp]
-            public void Setup()
+            private readonly Transmission transmission;
+
+            public ConstructorTests()
             {
                 transmission = new Transmission();
             }
 
-            private Transmission transmission;
-
-            [Test]
+            [Fact]
             public void It_should_not_be_missing_a_recipients_list()
             {
-                transmission.Recipients.ShouldNotBeNull();
+                Assert.NotNull(transmission.Recipients);
             }
 
-            [Test]
+            [Fact]
             public void It_should_not_be_missing_content()
             {
-                transmission.Content.ShouldNotBeNull();
+                Assert.NotNull(transmission.Content);
             }
 
-            [Test]
+            [Fact]
             public void It_should_not_be_missing_metadata()
             {
-                transmission.Metadata.ShouldNotBeNull();
+                Assert.NotNull(transmission.Metadata);
             }
 
-            [Test]
+            [Fact]
             public void It_should_not_be_missing_substition_data()
             {
-                transmission.SubstitutionData.ShouldNotBeNull();
+                Assert.NotNull(transmission.SubstitutionData);
             }
         }
 
-        [TestFixture]
         public class ParseTests
         {
             private MailMessage mailMessage;
             private Transmission transmission;
 
-            [SetUp]
-            public void Setup()
+            public ParseTests()
             {
                 mailMessage = new MailMessage();
                 mailMessage.From = new MailAddress("jim@example.com", "Jim Example");
@@ -71,73 +63,73 @@ namespace SparkPost.Tests
                 transmission = Transmission.Parse(mailMessage);
             }
 
-            [Test]
+            [Fact]
             public void From_should_match()
             {
-                transmission.Content.From.Name.ShouldEqual(mailMessage.From.DisplayName);
-                transmission.Content.From.Email.ShouldEqual(mailMessage.From.Address);
+                Assert.Equal(mailMessage.From.DisplayName, transmission.Content.From.Name);
+                Assert.Equal(mailMessage.From.Address, transmission.Content.From.Email);
             }
 
-            [Test]
+            [Fact]
             public void It_should_have_three_recipients()
             {
-                Assert.That(transmission.Recipients.Count, Is.EqualTo(3));
+                Assert.Equal(3, transmission.Recipients.Count);
             }
 
-            [Test]
+            [Fact]
             public void To_should_match()
             {
                 var to = transmission.Recipients.SingleOrDefault(r => r.Type == RecipientType.To);
-                Assert.That(to, Is.Not.Null);
-                Assert.That(to.Address.Name == mailMessage.To.First().DisplayName);
-                Assert.That(to.Address.Email == mailMessage.To.First().Address);
+                Assert.NotNull(to);
+                Assert.Equal(mailMessage.To.First().DisplayName, to.Address.Name);
+                Assert.Equal(mailMessage.To.First().Address, to.Address.Email);
             }
 
-            [Test]
+            [Fact]
             public void Cc_should_match()
             {
                 var cc = transmission.Recipients.SingleOrDefault(r => r.Type == RecipientType.CC);
-                Assert.That(cc, Is.Not.Null);
-                Assert.That(cc.Address.Name == mailMessage.CC.First().DisplayName);
-                Assert.That(cc.Address.Email == mailMessage.CC.First().Address);
+                Assert.NotNull(cc);
+                Assert.Equal(mailMessage.CC.First().DisplayName, cc.Address.Name);
+                Assert.Equal(mailMessage.CC.First().Address, cc.Address.Email);
             }
 
-            [Test]
+            [Fact]
             public void Bcc_should_match()
             {
                 var bcc = transmission.Recipients.SingleOrDefault(r => r.Type == RecipientType.BCC);
-                Assert.That(bcc, Is.Not.Null);
-                Assert.That(bcc.Address.Name == mailMessage.Bcc.First().DisplayName);
-                Assert.That(bcc.Address.Email == mailMessage.Bcc.First().Address);
+                Assert.NotNull(bcc);
+                Assert.Equal(mailMessage.Bcc.First().DisplayName, bcc.Address.Name);
+                Assert.Equal(mailMessage.Bcc.First().Address, bcc.Address.Email);
             }
 
-            [Test]
+            [Fact]
             public void Replyto_should_match()
             {
-                Assert.That(transmission.Content.ReplyTo, Is.EqualTo(mailMessage.ReplyToList.First().Address));
+                Assert.Equal(mailMessage.ReplyToList.First().Address, transmission.Content.ReplyTo);
             }
 
-            [Test]
+            [Fact]
             public void Subject_should_match()
             {
-                Assert.That(transmission.Content.Subject, Is.EqualTo(mailMessage.Subject));
+                Assert.Equal(mailMessage.Subject, transmission.Content.Subject);
             }
 
-            [Test]
+            [Fact]
             public void Text_body_should_match()
             {
-                Assert.That(transmission.Content.Text, Is.EqualTo(mailMessage.Body));
+                Assert.Equal(mailMessage.Body, transmission.Content.Text);
             }
 
-            [Test]
+            [Fact]
             public void Html_body_should_match()
             {
                 mailMessage.IsBodyHtml = true;
                 transmission = Transmission.Parse(mailMessage);
-                Assert.That(transmission.Content.Html, Is.EqualTo(mailMessage.Body));
+                Assert.Equal(mailMessage.Body, transmission.Content.Html);
             }
 
-            [Test]
+            [Fact]
             public void It_should_use_alternate_html_view()
             {
                 var html = "<p>Html body</p>";
@@ -145,10 +137,10 @@ namespace SparkPost.Tests
                 mailMessage.AlternateViews.Add(view);
                 transmission = Transmission.Parse(mailMessage);
 
-                Assert.That(transmission.Content.Html, Is.EqualTo(html));
+                Assert.Equal(html, transmission.Content.Html);
             }
 
-            [Test]
+            [Fact]
             public void It_should_use_alternate_text_view()
             {
                 mailMessage.IsBodyHtml = true;
@@ -157,10 +149,10 @@ namespace SparkPost.Tests
                 mailMessage.AlternateViews.Add(view);
                 transmission = Transmission.Parse(mailMessage);
 
-                Assert.That(transmission.Content.Text, Is.EqualTo(text));
+                Assert.Equal(text, transmission.Content.Text);
             }
 
-            [Test]
+            [Fact]
             public void It_should_use_both_alternate_views()
             {
                 var text = "Alternate text";
@@ -171,11 +163,11 @@ namespace SparkPost.Tests
                 mailMessage.AlternateViews.Add(view);
                 transmission = Transmission.Parse(mailMessage);
 
-                Assert.That(transmission.Content.Text, Is.EqualTo(text));
-                Assert.That(transmission.Content.Html, Is.EqualTo(html));
+                Assert.Equal(text, transmission.Content.Text);
+                Assert.Equal(html, transmission.Content.Html);
             }
 
-            [Test]
+            [Fact]
             public void It_should_copy_attachments()
             {
                 var text = "This is an attachment";
@@ -185,13 +177,13 @@ namespace SparkPost.Tests
                 mailMessage.Attachments.Add(new System.Net.Mail.Attachment(ms, name, type));
                 transmission = Transmission.Parse(mailMessage);
 
-                Assert.That(transmission.Content.Attachments.Count, Is.EqualTo(1));
-                Assert.That(transmission.Content.Attachments.First().Type, Is.EqualTo(type));
-                Assert.That(transmission.Content.Attachments.First().Name, Is.EqualTo(name));
+                Assert.Equal(1, transmission.Content.Attachments.Count);
+                Assert.Equal(type, transmission.Content.Attachments.First().Type);
+                Assert.Equal(name, transmission.Content.Attachments.First().Name);
 
                 var bytes = Convert.FromBase64String(transmission.Content.Attachments.First().Data);
                 var decoded = Encoding.ASCII.GetString(bytes);
-                Assert.That(decoded, Is.EqualTo(text));
+                Assert.Equal(text, decoded);
             }
         }
     }

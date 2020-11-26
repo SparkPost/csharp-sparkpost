@@ -1,34 +1,32 @@
-﻿using NUnit.Framework;
-using Should;
-using SparkPost.Utilities;
+﻿using SparkPost.Utilities;
+using Xunit;
 
 namespace SparkPost.Tests.Utilities
 {
-    [TestFixture]
     public class SnakeCaseTests
     {
-        [Test]
+        [Fact]
         public void It_should_convert_things_to_snake_case()
         {
-            SnakeCase.Convert("T").ShouldEqual("t");
-            SnakeCase.Convert("Test").ShouldEqual("test");
-            SnakeCase.Convert("TEST").ShouldEqual("t_e_s_t");
-            SnakeCase.Convert("JohnGalt").ShouldEqual("john_galt");
+            Assert.Equal("t", SnakeCase.Convert("T"));
+            Assert.Equal("test", SnakeCase.Convert("Test"));
+            Assert.Equal("t_e_s_t", SnakeCase.Convert("TEST"));
+            Assert.Equal("john_galt", SnakeCase.Convert("JohnGalt"));
         }
 
-        [Test]
+        [Fact]
         public void It_should_handle_harder_strings()
         {
-            SnakeCase.Convert("TestTesting").ShouldEqual("test_testing");
-            SnakeCase.Convert("TestingTest").ShouldEqual("testing_test");
-            SnakeCase.Convert("ApppppAppppppp").ShouldEqual("appppp_appppppp");
-            SnakeCase.Convert("ApppppppAppppp").ShouldEqual("appppppp_appppp");
+            Assert.Equal("test_testing", SnakeCase.Convert("TestTesting"));
+            Assert.Equal("testing_test", SnakeCase.Convert("TestingTest"));
+            Assert.Equal("appppp_appppppp", SnakeCase.Convert("ApppppAppppppp"));
+            Assert.Equal("appppppp_appppp", SnakeCase.Convert("ApppppppAppppp"));
         }
 
-        [Test]
+        [Fact]
         public void It_should_convert_null_to_null()
         {
-            SnakeCase.Convert(null).ShouldBeNull();
+            Assert.Null(SnakeCase.Convert(null));
         }
     }
 }

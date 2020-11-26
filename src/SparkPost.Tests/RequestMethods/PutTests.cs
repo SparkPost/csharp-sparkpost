@@ -1,49 +1,55 @@
 ﻿using System;
-using AutoMoq.Helpers;
-using NUnit.Framework;
-using Should;
+using System.Net.Http;
 using SparkPost.RequestMethods;
+using Xunit;
 
 namespace SparkPost.Tests.RequestMethods
 {
     public class PutTests
     {
-        [TestFixture]
-        public class CanExecuteTests : AutoMoqTestFixture<Put>
+        public class CanExecuteTests
         {
-            [Test]
+            private readonly Put put;
+
+            public CanExecuteTests()
+            {
+                var httpClient = new HttpClient();
+                put = new Put(httpClient);
+            }
+
+            [Fact]
             public void It_should_return_true_for_put()
             {
                 var request = new Request {Method = "PUT"};
-                Subject.CanExecute(request).ShouldBeTrue();
+                Assert.True(put.CanExecute(request));
             }
 
-            [Test]
+            [Fact]
             public void It_should_return_true_for_put_lower()
             {
                 var request = new Request {Method = "put"};
-                Subject.CanExecute(request).ShouldBeTrue();
+                Assert.True(put.CanExecute(request));
             }
 
-            [Test]
+            [Fact]
             public void It_should_return_true_for_put_json()
             {
                 var request = new Request {Method = "PUT JSON"};
-                Subject.CanExecute(request).ShouldBeTrue();
+                Assert.True(put.CanExecute(request));
             }
 
-            [Test]
+            [Fact]
             public void It_should_return_false_for_others()
             {
                 var request = new Request {Method = Guid.NewGuid().ToString()};
-                Subject.CanExecute(request).ShouldBeFalse();
+                Assert.False(put.CanExecute(request));
             }
 
-            [Test]
+            [Fact]
             public void It_should_return_false_for_nil()
             {
                 var request = new Request {Method = null};
-                Subject.CanExecute(request).ShouldBeFalse();
+                Assert.False(put.CanExecute(request));
             }
         }
     }

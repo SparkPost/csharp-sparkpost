@@ -1,0 +1,16 @@
+trigger: none
+pr: none
+
+variables:
+  PackageName: Sparkpost.Combee
+  PackageVersion: 1.15.1
+  PathToCsproj: src/SparkPost/SparkPost.csproj
+
+name: Pack'n'Push $(PackageName) $(PackageVersion) ($(Date:yyyy.MM.dd-HH.mm) r$(Rev:.r))
+
+extends:
+  template: template-pack-n-push-nuget.yml
+  parameters:
+    PackageName: $(PackageName)
+    PackageVersion: $(PackageVersion)
+    PathToCsproj: $(PathToCsproj)

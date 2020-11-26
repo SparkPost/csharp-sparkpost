@@ -1,27 +1,29 @@
 ﻿using System.Threading.Tasks;
-using AutoMoq.Helpers;
-using NUnit.Framework;
-using Should;
+using Moq;
 using SparkPost.RequestSenders;
+using Xunit;
 
 namespace SparkPost.Tests.RequestSenders
 {
     public class SyncRequestSenderTests
     {
-        [TestFixture]
-        public class SendTests : AutoMoqTestFixture<SyncRequestSender>
+        public class SendTests
         {
-            [Test]
-            public void It_should_return_the_result_from_the_parent_request_sender()
+            private SyncRequestSender subject;
+
+            [Fact]
+            public async Task It_should_return_the_result_from_the_parent_request_sender()
             {
                 var request = new Request();
                 var response = new Response();
 
-                Mocked<IRequestSender>().Setup(x => x.Send(request)).Returns(Task.FromResult(response));
+                var requestSender = new Mock<IRequestSender>();
+                requestSender.Setup(x => x.Send(request)).Returns(Task.FromResult(response));
+                subject = new SyncRequestSender(requestSender.Object);
 
-                var result = Subject.Send(request);
+                var result = await subject.Send(request);
 
-                result.Result.ShouldBeSameAs(response);
+                Assert.Equal(response, result);
             }
         }
     }

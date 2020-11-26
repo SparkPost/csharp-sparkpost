@@ -2,186 +2,186 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using System.Xml.XPath;
-using AutoMoq.Helpers;
 using Moq;
-using NUnit.Framework;
-using Should;
 using SparkPost.RequestSenders;
+using Xunit;
 
 namespace SparkPost.Tests
 {
     public class SuppressionTests
     {
-        [TestFixture]
-        public class DeleteTests : AutoMoqTestFixture<Suppressions>
+        public class DeleteTests
         {
-            private Response response;
-            private string email;
+            private readonly Response response;
+            private readonly string email;
+            private readonly Suppressions suppressions;
+            private readonly Mock<IClient> client;
+            private readonly Mock<IRequestSender> requestSender;
 
-            [SetUp]
-            public void Setup()
+            public DeleteTests()
             {
-                ResetSubject();
+                response = new Response { StatusCode = HttpStatusCode.NoContent };
 
-                response = new Response {StatusCode = HttpStatusCode.NoContent};
+                requestSender = new Mock<IRequestSender>();
 
-                Mocked<IRequestSender>()
-                    .Setup(x => x.Send(It.IsAny<Request>()))
-                    .Returns(Task.FromResult(response));
+                requestSender.Setup(x => x.Send(It.IsAny<Request>()))
+                             .Returns(Task.FromResult(response));
+
+                var dataMapper = new Mock<IDataMapper>();
+
+                client = new Mock<IClient>();
+
+                suppressions = new Suppressions(client.Object, requestSender.Object, dataMapper.Object);
 
                 email = Guid.NewGuid().ToString();
             }
 
-            [Test]
-            public async void It_should_return_true_if_the_web_request_returns_no_content()
+            [Fact]
+            public async Task It_should_return_true_if_the_web_request_returns_no_content()
             {
-                var result = await Subject.Delete(email);
-                result.ShouldBeTrue();
+                var result = await suppressions.Delete(email);
+                Assert.True(result);
             }
 
-            [Test]
-            public async void It_should_return_false_if_the_web_request_returns_anything_but_no_content()
+            [Fact]
+            public async Task It_should_return_false_if_the_web_request_returns_anything_but_no_content()
             {
                 response.StatusCode = HttpStatusCode.Accepted;
-                (await Subject.Delete(email)).ShouldBeFalse();
+                bool deleted = await suppressions.Delete(email);
+                Assert.False(deleted);
 
                 response.StatusCode = HttpStatusCode.Ambiguous;
-                (await Subject.Delete(email)).ShouldBeFalse();
+                deleted = await suppressions.Delete(email);
+                Assert.False(deleted);
 
                 response.StatusCode = HttpStatusCode.UpgradeRequired;
-                (await Subject.Delete(email)).ShouldBeFalse();
+                deleted = await suppressions.Delete(email);
+                Assert.False(deleted);
             }
 
-            [Test]
-            public async void It_should_build_the_web_request_parameters_correctly()
+            [Fact]
+            public async Task It_should_build_the_web_request_parameters_correctly()
             {
                 var version = Guid.NewGuid().ToString();
 
-                Mocked<IClient>()
+                client
                     .Setup(x => x.Version)
                     .Returns(version);
 
-                Mocked<IRequestSender>()
+                requestSender
                     .Setup(x => x.Send(It.IsAny<Request>()))
                     .Callback((Request r) =>
                     {
-                        r.Url.ShouldEqual($"api/{version}/suppression-list/{email}");
-                        r.Method.ShouldEqual("DELETE");
+                        Assert.Equal($"api/{version}/suppression-list/{email}", r.Url);
+                        Assert.Equal("DELETE", r.Method);
                     })
                     .Returns(Task.FromResult(response));
 
-                await Subject.Delete(email);
+                await suppressions.Delete(email);
             }
 
-            [Test]
-            public async void It_should_encode_the_email_address()
+            [Fact]
+            public async Task It_should_encode_the_email_address()
             {
                 var version = Guid.NewGuid().ToString();
 
-                email = "testing@test.com";
+                var email = "testing@test.com";
 
-                Mocked<IClient>()
+                client
                     .Setup(x => x.Version)
                     .Returns(version);
 
-                Mocked<IRequestSender>()
+                requestSender
                     .Setup(x => x.Send(It.IsAny<Request>()))
                     .Callback((Request r) =>
                     {
-                        r.Url.ShouldEqual($"api/{version}/suppression-list/testing%40test.com");
-                        r.Method.ShouldEqual("DELETE");
+                        Assert.Equal($"api/{version}/suppression-list/testing%40test.com", r.Url);
+                        Assert.Equal("DELETE", r.Method);
                     })
                     .Returns(Task.FromResult(response));
 
-                await Subject.Delete(email);
+                await suppressions.Delete(email);
             }
         }
 
-        [TestFixture]
-        public class CreateOrUpdateTests : AutoMoqTestFixture<Suppressions>
+        public class CreateOrUpdateTests
         {
-            private Response response;
-            private List<Suppression> suppressions;
+            private readonly Response response;
+            private readonly List<Suppression> suppressionsList;
+            private readonly Suppressions suppressions;
+            private readonly Mock<IClient> client;
+            private readonly Mock<IRequestSender> requestSender;
 
-            [SetUp]
-            public void Setup()
+            public CreateOrUpdateTests()
             {
-                ResetSubject();
-
                 response = new Response
                 {
                     StatusCode = HttpStatusCode.OK
                 };
 
-                Mocked<IRequestSender>()
-                    .Setup(x => x.Send(It.IsAny<Request>()))
-                    .Returns(Task.FromResult(response));
-
-                suppressions = new List<Suppression>
+                suppressionsList = new List<Suppression>
                 {
                     new Suppression(),
                     new Suppression()
                 };
+
+                requestSender = new Mock<IRequestSender>();
+                requestSender.Setup(x => x.Send(It.IsAny<Request>()))
+                             .Returns(Task.FromResult(response));
+
+                var dataMapper = new Mock<IDataMapper>();
+
+                client = new Mock<IClient>();
+
+                suppressions = new Suppressions(client.Object, requestSender.Object, dataMapper.Object);
             }
 
-            [Test]
-            public async void It_should_return_a_response_when_the_web_request_is_ok()
+            [Fact]
+            public async Task It_should_return_a_response_when_the_web_request_is_ok()
             {
-                var result = await Subject.CreateOrUpdate(suppressions);
-
-                result.ShouldNotBeNull();
+                var result = await suppressions.CreateOrUpdate(suppressionsList);
+                Assert.NotNull(result);
             }
 
-            [Test]
-            public async void It_should_return_the_reason_phrase()
+            [Fact]
+            public async Task It_should_return_the_reason_phrase()
             {
                 response.ReasonPhrase = Guid.NewGuid().ToString();
-                var result = await Subject.CreateOrUpdate(suppressions);
-                result.ReasonPhrase.ShouldEqual(response.ReasonPhrase);
+                var result = await suppressions.CreateOrUpdate(suppressionsList);
+                Assert.Equal(response.ReasonPhrase, result.ReasonPhrase);
             }
 
-            [Test]
-            public async void It_should_return_the_content()
+            [Fact]
+            public async Task It_should_return_the_content()
             {
                 response.Content = Guid.NewGuid().ToString();
-                var result = await Subject.CreateOrUpdate(suppressions);
-                result.Content.ShouldEqual(response.Content);
+                var result = await suppressions.CreateOrUpdate(suppressionsList);
+                Assert.Equal(response.Content, result.Content);
             }
 
-            [Test]
-            public async void It_should_make_a_properly_formed_request()
+            [Fact]
+            public async Task It_should_make_a_properly_formed_request()
             {
-                var client = Mocked<IClient>().Object;
-                Mocked<IClient>().Setup(x => x.Version).Returns(Guid.NewGuid().ToString());
-                Mocked<IRequestSender>()
+                client.Setup(x => x.Version)
+                      .Returns(Guid.NewGuid().ToString());
+                requestSender
                     .Setup(x => x.Send(It.IsAny<Request>()))
                     .Callback((Request r) =>
                     {
-                        r.Url.ShouldEqual($"api/{client.Version}/suppression-list");
-                        r.Method.ShouldEqual("PUT JSON");
+                        Assert.Equal($"api/{client.Object.Version}/suppression-list", r.Url);
+                        Assert.Equal("PUT JSON", r.Method);
                     })
                     .Returns(Task.FromResult(response));
 
-                await Subject.CreateOrUpdate(suppressions);
+                await suppressions.CreateOrUpdate(suppressionsList);
             }
 
-            [Test]
-            public async void It_should_throw_if_the_http_status_code_is_not_ok()
+            [Fact]
+            public async Task It_should_throw_if_the_http_status_code_is_not_ok()
             {
                 response.StatusCode = HttpStatusCode.Accepted;
 
-                Exception exception = null;
-                try
-                {
-                    await Subject.CreateOrUpdate(suppressions);
-                }
-                catch(ResponseException ex)
-                {
-                    exception = ex;
-                }
-
-                exception.ShouldNotBeNull();
+                await Assert.ThrowsAsync<ResponseException>(async () => await suppressions.CreateOrUpdate(suppressionsList));
             }
         }
     }

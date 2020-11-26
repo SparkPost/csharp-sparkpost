@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using SparkPost.RequestSenders;
 using SparkPost.Utilities;
 
@@ -30,17 +31,19 @@ namespace SparkPost
             };
 
             var response = await requestSender.Send(request);
-            if (response.StatusCode != HttpStatusCode.OK) throw new ResponseException(response);
+            if (response.StatusCode != HttpStatusCode.OK) {
+                throw new ResponseException(response);
+            }
 
-            var results = Jsonification.DeserializeObject<dynamic>(response.Content).results;
+            var results = Jsonification.DeserializeObject<JsonSendResponse>(response.Content).Results;
             return new SendTransmissionResponse()
             {
-                Id = results.id,
+                Id = results.Id,
                 ReasonPhrase = response.ReasonPhrase,
                 StatusCode = response.StatusCode,
                 Content = response.Content,
-                TotalAcceptedRecipients = results.total_accepted_recipients,
-                TotalRejectedRecipients = results.total_rejected_recipients,
+                TotalAcceptedRecipients = results.TotalAcceptedRecipients,
+                TotalRejectedRecipients = results.TotalRejectedRecipients,
             };
         }
 
@@ -105,5 +108,23 @@ namespace SparkPost
 
             return transmissionResponse;
         }
+    }
+
+    internal class JsonSendResponse
+    {
+        [JsonProperty("results")]
+        public JsonSendResult Results { get; set; }
+    }
+
+    internal class JsonSendResult
+    {
+        [JsonProperty("total_rejected_recipients")]
+        public int TotalRejectedRecipients { get; set; }
+
+        [JsonProperty("total_accepted_recipients")]
+        public int TotalAcceptedRecipients { get; set; }
+
+        [JsonProperty("Id")]
+        public string Id { get; set; }
     }
 }

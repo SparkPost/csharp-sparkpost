@@ -1,42 +1,40 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Text;
-using System.Threading.Tasks;
+using Xunit;
 
 namespace SparkPost.Tests
 {
-    [TestFixture]
     public class FileTests
     {
-        [Test]
+        [Fact]
         public void It_should_create_correct_type()
         {
             byte[] content = null;
-            Assert.That(File.Create<Attachment>(content), Is.InstanceOf<Attachment>());
-            Assert.That(File.Create<InlineImage>(content), Is.InstanceOf<InlineImage>());
+            Assert.IsType<Attachment>(File.Create<Attachment>(content));
+            Assert.IsType<InlineImage>(File.Create<InlineImage>(content));
         }
 
-        [TestCase("This is some test data.")]
-        [TestCase("This is some other data.")]
+        [Theory]
+        [InlineData("This is some test data.")]
+        [InlineData("This is some other data.")]
         public void It_should_encode_data_correctly(string s)
         {
             var b = GetBytes(s);
             var attach = File.Create<Attachment>(b);
-            Assert.That(attach.Data, Is.EqualTo(EncodeString(s)));
+            Assert.Equal(EncodeString(s), attach.Data);
         }
 
-        [TestCase("foo.png", "image/png")]
-        [TestCase("foo.txt", "text/plain")]
-        [TestCase("sf", "application/octet-stream")]
-        [TestCase("", "application/octet-stream")]
+        [Theory]
+        [InlineData("foo.png", "image/png")]
+        [InlineData("foo.txt", "text/plain")]
+        [InlineData("sf", "application/octet-stream")]
+        [InlineData("", "application/octet-stream")]
         public void It_should_set_name_and_type_correctly(string filename, string mimeType)
         {
             var b = GetBytes("Some Test Data");
             var attach = File.Create<Attachment>(b, filename);
-            Assert.That(attach.Name, Is.EqualTo(filename));
-            Assert.That(attach.Type, Is.EqualTo(mimeType));
+            Assert.Equal(filename, attach.Name);
+            Assert.Equal(mimeType, attach.Type);
         }
 
         private byte[] GetBytes(string input)

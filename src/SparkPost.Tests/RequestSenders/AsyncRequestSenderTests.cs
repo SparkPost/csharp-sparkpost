@@ -1,41 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AutoMoq.Helpers;
-using NUnit.Framework;
-using Should;
+using Moq;
 using SparkPost.RequestSenders;
+using Xunit;
 
 namespace SparkPost.Tests.RequestSenders
 {
     public class AsyncRequestSenderTests
     {
-        public class SendTests : AutoMoqTestFixture<SendTests.AsyncTesting>
+        public class SendTests
         {
-            private HttpClient httpClient;
-            private Request request;
-            private string apiHost;
-            private string apiKey;
-            private HttpResponseMessage defaultHttpResponseMessage;
+            private readonly Request request;
+            private readonly string apiHost;
+            private readonly string apiKey;
+            private readonly HttpResponseMessage defaultHttpResponseMessage;
+            private readonly SendTests.AsyncTesting asyncTesting;
+            private readonly Mock<IClient> client;
 
-            [SetUp]
-            public void Setup()
-            {
-                ResetSubject();
-
-                httpClient = new HttpClient();
-
+            public SendTests()
+            { 
+                var httpClient = new HttpClient();
                 apiHost = "http://test.com";
                 apiKey = Guid.NewGuid().ToString();
 
                 var settings = new Client.Settings();
                 settings.BuildHttpClientsUsing(() => httpClient);
-                Mocked<IClient>().Setup(x => x.CustomSettings).Returns(settings);
-                Mocked<IClient>().Setup(x => x.ApiHost).Returns(apiHost);
-                Mocked<IClient>().Setup(x => x.ApiKey).Returns(apiKey);
+                client = new Mock<IClient>();
+                client.Setup(x => x.CustomSettings).Returns(settings);
+                client.Setup(x => x.ApiHost).Returns(apiHost);
+                client.Setup(x => x.ApiKey).Returns(apiKey);
+
+                asyncTesting = new SendTests.AsyncTesting(client.Object);
 
                 request = new Request();
 
@@ -45,86 +43,87 @@ namespace SparkPost.Tests.RequestSenders
                 };
             }
 
-            [Test]
+
+            [Fact]
             public async void It_should_return_the_http_response_message_info()
             {
                 var content = Guid.NewGuid().ToString();
-                Subject.SetupTheResponseWith((r, h) => new HttpResponseMessage(HttpStatusCode.Accepted)
+                asyncTesting.SetupTheResponseWith((r, h) => new HttpResponseMessage(HttpStatusCode.Accepted)
                 {
                     Content = new StringContent(content)
                 });
 
-                var result = await Subject.Send(request);
-                result.StatusCode.ShouldEqual(HttpStatusCode.Accepted);
-                result.Content.ShouldEqual(content);
+                var result = await asyncTesting.Send(request);
+                Assert.Equal(HttpStatusCode.Accepted, result.StatusCode);
+                Assert.Equal(content, result.Content);
             }
 
-            [Test]
-            public async void It_should_return_the_http_response_message_info_take_2()
+            [Fact]
+            public async Task It_should_return_the_http_response_message_info_take_2()
             {
                 var content = Guid.NewGuid().ToString();
-                Subject.SetupTheResponseWith((r, h) => new HttpResponseMessage(HttpStatusCode.NotFound)
+                asyncTesting.SetupTheResponseWith((r, h) => new HttpResponseMessage(HttpStatusCode.NotFound)
                 {
                     Content = new StringContent(content)
                 });
 
-                var result = await Subject.Send(request);
-                result.StatusCode.ShouldEqual(HttpStatusCode.NotFound);
-                result.ReasonPhrase.ShouldEqual("Not Found");
-                result.Content.ShouldEqual(content);
+                var result = await asyncTesting.Send(request);
+                Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+                Assert.Equal("Not Found", result.ReasonPhrase);
+                Assert.Equal(content, result.Content);
             }
 
-            [Test]
-            public async void It_should_pass_the_api_key()
+            [Fact]
+            public async Task It_should_pass_the_api_key()
             {
-                Subject.SetupTheResponseWith((r, h) =>
+                asyncTesting.SetupTheResponseWith((r, h) =>
                 {
-                    h.DefaultRequestHeaders.Authorization.ToString().ShouldEqual(apiKey);
+                    Assert.Equal(apiKey, h.DefaultRequestHeaders.Authorization.ToString());
                     return defaultHttpResponseMessage;
                 });
 
-                await Subject.Send(request);
+                await asyncTesting.Send(request);
             }
 
-            [Test]
-            public async void It_should_send_the_request_to_the_appropriate_host()
+            [Fact]
+            public async Task It_should_send_the_request_to_the_appropriate_host()
             {
-                Subject.SetupTheResponseWith((r, h) =>
+                asyncTesting.SetupTheResponseWith((r, h) =>
                 {
-                    h.BaseAddress.ToString().ShouldEqual(apiHost + "/");
+                    Assert.Equal(apiHost + "/", h.BaseAddress.ToString());
                     return defaultHttpResponseMessage;
                 });
 
-                await Subject.Send(request);
+                await asyncTesting.Send(request);
             }
 
-            [Test]
-            public async void It_should_set_the_subaccount_when_the_subaccount_is_not_zero()
+            [Fact]
+            public async Task It_should_set_the_subaccount_when_the_subaccount_is_not_zero()
             {
-                Mocked<IClient>().Setup(x => x.SubaccountId).Returns(345);
-                Subject.SetupTheResponseWith((r, h) =>
+                client.Setup(x => x.SubaccountId).Returns(345);
+                asyncTesting.SetupTheResponseWith((r, h) =>
                 {
                     var match = h.DefaultRequestHeaders.First(x => x.Key == "X-MSYS-SUBACCOUNT");
-                    match.Value.Count().ShouldEqual(1);
-                    match.Value.First().ShouldEqual("345");
+                    Assert.Single(match.Value);
+                    Assert.Equal("345", match.Value.First());
                     return defaultHttpResponseMessage;
                 });
 
-                await Subject.Send(request);
+                await asyncTesting.Send(request);
             }
 
-            [Test]
-            public async void It_should_NOT_set_a_subaccount_when_the_subaccount_is_zero()
+            [Fact]
+            public async Task It_should_NOT_set_a_subaccount_when_the_subaccount_is_zero()
             {
-                Mocked<IClient>().Setup(x => x.SubaccountId).Returns(0);
-                Subject.SetupTheResponseWith((r, h) =>
+                client.Setup(x => x.SubaccountId).Returns(0);
+                asyncTesting.SetupTheResponseWith((r, h) =>
                 {
                     var count = h.DefaultRequestHeaders.Count(x => x.Key == "X-MSYS-SUBACCOUNT");
-                    count.ShouldEqual(0);
+                    Assert.Equal(0, count);
                     return defaultHttpResponseMessage;
                 });
 
-                await Subject.Send(request);
+                await asyncTesting.Send(request);
             }
 
             public class AsyncTesting : AsyncRequestSender

@@ -1,51 +1,45 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Xunit;
 
 namespace SparkPost.Tests
 {
-    [TestFixture]
     public class MetricsQueryTests
     {
         private MetricsQuery _query;
 
-        [SetUp]
-        public void Setup()
+        public MetricsQueryTests()
         {
             _query = new MetricsQuery();
         }
 
         private void Check(IList<string> list)
         {
-            Assert.That(list, Is.Not.Null);
-            Assert.That(list, Is.Empty);
+            Assert.NotNull(list);
+            Assert.Empty(list);
         }
 
-        [Test]
+        [Fact]
         public void It_should_have_a_default_campaigns_list() => Check(_query.Campaigns);
 
-        [Test]
+        [Fact]
         public void It_should_have_a_default_domains_list() => Check(_query.Domains);
 
-        [Test]
+        [Fact]
         public void It_should_have_a_default_metrics_list() => Check(_query.Metrics);
 
-        [Test]
+        [Fact]
         public void It_should_have_a_default_templates_list() => Check(_query.Templates);
 
-        [Test]
+        [Fact]
         public void It_should_have_a_default_sending_ips_list() => Check(_query.SendingIps);
 
-        [Test]
+        [Fact]
         public void It_should_have_a_default_ip_pools_list() => Check(_query.IpPools);
 
-        [Test]
+        [Fact]
         public void It_should_have_a_default_sending_domains_list() => Check(_query.SendingDomains);
 
-        [Test]
+        [Fact]
         public void It_should_have_a_default_subaccounts_list() => Check(_query.Subaccounts);
     }
 }

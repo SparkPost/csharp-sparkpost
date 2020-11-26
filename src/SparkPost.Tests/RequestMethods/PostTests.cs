@@ -1,49 +1,55 @@
 ﻿using System;
-using AutoMoq.Helpers;
-using NUnit.Framework;
-using Should;
+using System.Net.Http;
 using SparkPost.RequestMethods;
+using Xunit;
 
 namespace SparkPost.Tests.RequestMethods
 {
     public class PostTests
     {
-        [TestFixture]
-        public class CanExecuteTests : AutoMoqTestFixture<Post>
+        public class CanExecuteTests
         {
-            [Test]
+            private readonly Post post;
+
+            public CanExecuteTests()
+            {
+                var httpClient = new HttpClient();
+                post = new Post(httpClient);
+            }
+
+            [Fact]
             public void It_should_return_true_for_post()
             {
                 var request = new Request {Method = "POST"};
-                Subject.CanExecute(request).ShouldBeTrue();
+                Assert.True(post.CanExecute(request));
             }
 
-            [Test]
+            [Fact]
             public void It_should_return_true_for_post_lower()
             {
                 var request = new Request {Method = "post"};
-                Subject.CanExecute(request).ShouldBeTrue();
+                Assert.True(post.CanExecute(request));
             }
 
-            [Test]
+            [Fact]
             public void It_should_return_true_for_post_spaces()
             {
                 var request = new Request {Method = "post  "};
-                Subject.CanExecute(request).ShouldBeTrue();
+                Assert.True(post.CanExecute(request));
             }
 
-            [Test]
+            [Fact]
             public void It_should_return_false_for_others()
             {
                 var request = new Request {Method = Guid.NewGuid().ToString()};
-                Subject.CanExecute(request).ShouldBeFalse();
+                Assert.False(post.CanExecute(request));
             }
 
-            [Test]
+            [Fact]
             public void It_should_return_false_for_nil()
             {
                 var request = new Request {Method = null};
-                Subject.CanExecute(request).ShouldBeFalse();
+                Assert.False(post.CanExecute(request));
             }
         }
     }

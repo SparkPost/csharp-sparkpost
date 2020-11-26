@@ -40,33 +40,32 @@ namespace SparkPost
                 StatusCode = response.StatusCode,
                 Content = response.Content,
             };
-
-
             var results = JsonConvert.DeserializeObject<dynamic>(response.Content).results;
             if (results.recipients == null) return recipientListsResponse;
 
-            recipientListsResponse.Id = results.id;
-            recipientListsResponse.Name = results.name;
-            recipientListsResponse.Description = results.description;
-            recipientListsResponse.Attributes = results.attributes != null
-                ? new Attributes
-                {
-                    InternalId = results.attributes.internal_id
-                    ,
-                    ListGroupId = results.attributes.list_group_id
-                }
-                : null;
-            recipientListsResponse.TotalAcceptedRecipients = results.total_accepted_recipients;
-            recipientListsResponse.RecipientLists = RetrieveRecipientListsResponse.CreateFromResponse(response);
-
             recipientListsResponse.RecipientList = new RecipientList
             {
-                Id = recipientListsResponse.Id,
-                Recipients = recipientListsResponse.RecipientLists,
-                Attributes = recipientListsResponse.Attributes,
-                Description = recipientListsResponse.Description,
-                Name = recipientListsResponse.Name
+                Id = results.id,
+                Name = results.name,
+                Description = results.description,
+                Attributes = results.attributes != null
+                    ? new Attributes
+                    {
+                        InternalId = results.attributes.internal_id, ListGroupId = results.attributes.list_group_id
+                    }
+                    : null
             };
+            recipientListsResponse.TotalAcceptedRecipients = results.total_accepted_recipients;
+            ////recipientListsResponse.RecipientLists = RetrieveRecipientListsResponse.CreateFromResponse(response);
+
+            ////recipientListsResponse.RecipientList = new RecipientList
+            ////{
+            ////    Id = recipientListsResponse.Id,
+            ////    Recipients = recipientListsResponse.RecipientLists,
+            ////    Attributes = recipientListsResponse.Attributes,
+            ////    Description = recipientListsResponse.Description,
+            ////    Name = recipientListsResponse.Name
+            ////};
 
             return recipientListsResponse;
         }

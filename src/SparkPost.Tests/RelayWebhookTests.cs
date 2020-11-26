@@ -1,23 +1,21 @@
-﻿using NUnit.Framework;
-using Should;
+﻿using Xunit;
 
 namespace SparkPost.Tests
 {
     public class RelayWebhookTests
     {
-        [TestFixture]
         public class DefaultTests
         {
-            [Test]
+            [Fact]
             public void It_should_initialize_match()
             {
-                (new RelayWebhook()).Match.ShouldNotBeNull();
+                Assert.NotNull(new RelayWebhook().Match);
             }
 
-            [Test]
+            [Fact]
             public void It_should_initialize_match_protocol()
             {
-                (new RelayWebhook()).Match.Protocol.ShouldEqual("SMTP");
+                Assert.Equal("SMTP", new RelayWebhook().Match.Protocol);
             }
         }
     }

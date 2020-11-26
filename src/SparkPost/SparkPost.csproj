@@ -1,192 +1,35 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{A5DDA3E3-7B3D-46C3-B4BB-C627FBA37812}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SparkPost</RootNamespace>
-    <AssemblyName>SparkPost</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\SparkPost.xml</DocumentationFile>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyTitle>SparkPost</AssemblyTitle>
+    <Company>SparkPost</Company>
+    <Product>SparkPost</Product>
+    <Description>SparkPost API</Description>
+    <Copyright>Copyright 2016</Copyright>
+    <Deterministic>false</Deterministic>
+    <Version>1.15.0</Version>
+    <AssemblyVersion>1.15.0.*</AssemblyVersion>
+    <FileVersion>1.15.0.0</FileVersion>
     <NoWarn>1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\SparkPost.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
+    <Authors>Darren Cauthon</Authors>
+    <PackageIconUrl>https://www.sparkpost.com/sites/default/files/attachments/SparkPost_Logo_2-Color_Gray-Orange_RGB.svg</PackageIconUrl>
+    <PackageId>SparkPost.Combee</PackageId>
+    <PackageProjectUrl>https://github.com/SparkPost/csharp-sparkpost</PackageProjectUrl>
+    <PackageReleaseNotes>Added support to pass a user-agent.</PackageReleaseNotes>
+    <PackageTags>email</PackageTags>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Design" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="MimeMapping" Version="1.0.1.26" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Address.cs" />
-    <Compile Include="Attributes.cs" />
-    <Compile Include="BounceCategory.cs" />
-    <Compile Include="BounceClass.cs" />
-    <Compile Include="BounceClassDetails.cs" />
-    <Compile Include="BounceClassesDetails.cs" />
-    <Compile Include="CreateSendingDomainResponse.cs" />
-    <Compile Include="Dkim.cs" />
-    <Compile Include="Dns.cs" />
-    <Compile Include="GetMetricsResponse.cs" />
-    <Compile Include="GetMetricsResourceResponse.cs" />
-    <Compile Include="GetSendingDomainResponse.cs" />
-    <Compile Include="IMessageEvents.cs" />
-    <Compile Include="IMetrics.cs" />
-    <Compile Include="IRecipientLists.cs" />
-    <Compile Include="ISendingDomains.cs" />
-    <Compile Include="IValueMapper.cs" />
-    <Compile Include="ListMessageEventsResponse.cs" />
-    <Compile Include="ListRelayWebhookResponse.cs" />
-    <Compile Include="ListInboundDomainResponse.cs" />
-    <Compile Include="ListSendingDomainResponse.cs" />
-    <Compile Include="MessageEvent.cs" />
-    <Compile Include="MessageEvents.cs" />
-    <Compile Include="MessageEventSampleResponse.cs" />
-    <Compile Include="MessageEventsQuery.cs" />
-    <Compile Include="MessageEventType.cs" />
-    <Compile Include="Metrics.cs" />
-    <Compile Include="MetricsQuery.cs" />
-    <Compile Include="MetricsField.cs" />
-    <Compile Include="MetricsResourceQuery.cs" />
-    <Compile Include="PageLink.cs" />
-    <Compile Include="RecipientList.cs" />
-    <Compile Include="RecipientLists.cs" />
-    <Compile Include="RetrieveRecipientListsResponse.cs" />
-    <Compile Include="RetrieveRelayWebhookResponse.cs" />
-    <Compile Include="InboundDomainResponse.cs" />
-    <Compile Include="RetrieveTemplatesResponse.cs" />
-    <Compile Include="SendingDomain.cs" />
-    <Compile Include="SendingDomains.cs" />
-    <Compile Include="SendingDomainStatus.cs" />
-    <Compile Include="SendRecipientListsResponse.cs" />
-    <Compile Include="UpdateRecipientListResponse.cs" />
-    <Compile Include="UpdateSendingDomainResponse.cs" />
-    <Compile Include="Utilities\Jsonification.cs" />
-    <Compile Include="Utilities\MailMessageMapping.cs" />
-    <Compile Include="Utilities\SnakeCase.cs" />
-    <Compile Include="Utilities\StringHelper.cs" />
-    <Compile Include="ValueMappers\AnonymousValueMapper.cs" />
-    <Compile Include="ValueMappers\BooleanValueMapper.cs" />
-    <Compile Include="RequestSenders\AsyncRequestSender.cs" />
-    <Compile Include="Attachment.cs" />
-    <Compile Include="CcHandling.cs" />
-    <Compile Include="Client.cs" />
-    <Compile Include="Content.cs" />
-    <Compile Include="CreateSubaccountResponse.cs" />
-    <Compile Include="DataMapper.cs" />
-    <Compile Include="File.cs" />
-    <Compile Include="IClient.cs" />
-    <Compile Include="InlineImage.cs" />
-    <Compile Include="IRequestMethod.cs" />
-    <Compile Include="ISubaccounts.cs" />
-    <Compile Include="ISuppressions.cs" />
-    <Compile Include="LeftRight.cs" />
-    <Compile Include="ListSubaccountResponse.cs" />
-    <Compile Include="ListSuppressionResponse.cs" />
-    <Compile Include="ITransmissions.cs" />
-    <Compile Include="ListTransmissionResponse.cs" />
-    <Compile Include="ListWebhookResponse.cs" />
-    <Compile Include="Options.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Recipient.cs" />
-    <Compile Include="RecipientType.cs" />
-    <Compile Include="Request.cs" />
-    <Compile Include="RequestMethodFinder.cs" />
-    <Compile Include="RequestMethods\Delete.cs" />
-    <Compile Include="RequestMethods\Get.cs" />
-    <Compile Include="RequestMethods\Post.cs" />
-    <Compile Include="RequestMethods\Put.cs" />
-    <Compile Include="RequestMethods\PutAndPostAreTheSame.cs" />
-    <Compile Include="RequestMethods\RequestMethod.cs" />
-    <Compile Include="RequestSenders\RequestSender.cs" />
-    <Compile Include="Response.cs" />
-    <Compile Include="ResponseException.cs" />
-    <Compile Include="RetrieveTransmissionResponse.cs" />
-    <Compile Include="RetrieveWebhookResponse.cs" />
-    <Compile Include="SendingModes.cs" />
-    <Compile Include="SendTransmissionResponse.cs" />
-    <Compile Include="Subaccount.cs" />
-    <Compile Include="SubaccountCreate.cs" />
-    <Compile Include="Subaccounts.cs" />
-    <Compile Include="SubaccountStatus.cs" />
-    <Compile Include="SubaccountUpdate.cs" />
-    <Compile Include="Suppression.cs" />
-    <Compile Include="Suppressions.cs" />
-    <Compile Include="SuppressionsQuery.cs" />
-    <Compile Include="RequestSenders\SyncRequestSender.cs" />
-    <Compile Include="CreateTemplateResponse.cs" />
-    <Compile Include="ITemplates.cs" />
-    <Compile Include="RetrieveTemplateResponse.cs" />
-    <Compile Include="Template.cs" />
-    <Compile Include="TemplateContent.cs" />
-    <Compile Include="TemplateOptions.cs" />
-    <Compile Include="Templates.cs" />
-    <Compile Include="Transmission.cs" />
-    <Compile Include="Transmissions.cs" />
-    <Compile Include="UpdateSubaccountResponse.cs" />
-    <Compile Include="UpdateSuppressionResponse.cs" />
-    <Compile Include="ValueMappers\DateTimeOffsetValueMapper.cs" />
-    <Compile Include="ValueMappers\DateTimeValueMapper.cs" />
-    <Compile Include="ValueMappers\EnumerableValueMapper.cs" />
-    <Compile Include="ValueMappers\EnumValueMapper.cs" />
-    <Compile Include="ValueMappers\MapASetOfItemsUsingToDictionary.cs" />
-    <Compile Include="ValueMappers\MapASingleItemUsingToDictionary.cs" />
-    <Compile Include="ValueMappers\StringObjectDictionaryValueMapper.cs" />
-    <Compile Include="ValueMappers\StringStringDictionaryValueMapper.cs" />
-    <Compile Include="RelayWebhook.cs" />
-    <Compile Include="InboundDomain.cs" />
-    <Compile Include="VerifySendingDomain.cs" />
-    <Compile Include="VerifySendingDomainResponse.cs" />
-    <Compile Include="VerifySendingDomainStatus.cs" />
-    <Compile Include="Webhook.cs" />
-    <Compile Include="RelayWebhooks.cs" />
-    <Compile Include="InboundDomains.cs" />
-    <Compile Include="Webhooks.cs" />
+    <None Include="LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

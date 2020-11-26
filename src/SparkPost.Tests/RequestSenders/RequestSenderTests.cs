@@ -1,23 +1,22 @@
 ﻿using System.Threading.Tasks;
-using AutoMoq.Helpers;
 using Moq;
-using NUnit.Framework;
-using Should;
 using SparkPost.RequestSenders;
+using Xunit;
 
 namespace SparkPost.Tests.RequestSenders
 {
     public class RequestSenderTests
     {
-        [TestFixture]
-        public class SendTests : AutoMoqTestFixture<RequestSender>
+        public class SendTests
         {
-            [SetUp]
-            public void Setup()
-            {
-                ResetSubject();
+            private readonly RequestSender fixture;
+            private readonly Request request;
+            private readonly Mock<AsyncRequestSender> async;
+            private readonly Mock<SyncRequestSender> sync;
+            private readonly Client client;
 
-                Mocked<IClient>().SetupAllProperties();
+            public SendTests()
+            {
                 client = new Client(null);
 
                 request = new Request();
@@ -25,17 +24,10 @@ namespace SparkPost.Tests.RequestSenders
                 async = new Mock<AsyncRequestSender>(null, null);
                 sync = new Mock<SyncRequestSender>(null);
 
-                Mocker.SetInstance<IClient>(client);
-                Mocker.SetInstance(async.Object);
-                Mocker.SetInstance(sync.Object);
+                fixture = new RequestSender(async.Object, sync.Object, client);
             }
 
-            private Request request;
-            private Mock<AsyncRequestSender> async;
-            private Mock<SyncRequestSender> sync;
-            private Client client;
-
-            [Test]
+            [Fact]
             public void It_should_return_the_result_from_async()
             {
                 client.CustomSettings.SendingMode = SendingModes.Async;
@@ -43,11 +35,11 @@ namespace SparkPost.Tests.RequestSenders
                 var response = Task.FromResult(new Response());
                 async.Setup(x => x.Send(request)).Returns(response);
 
-                var result = Subject.Send(request);
-                result.Result.ShouldBeSameAs(response.Result);
+                var result = fixture.Send(request);
+                Assert.Equal(response.Result, result.Result);
             }
 
-            [Test]
+            [Fact]
             public void It_should_return_the_result_from_sync()
             {
                 client.CustomSettings.SendingMode = SendingModes.Sync;
@@ -55,8 +47,8 @@ namespace SparkPost.Tests.RequestSenders
                 var response = Task.FromResult(new Response());
                 sync.Setup(x => x.Send(request)).Returns(response);
 
-                var result = Subject.Send(request);
-                result.Result.ShouldBeSameAs(response.Result);
+                var result = fixture.Send(request);
+                Assert.Equal(response.Result, result.Result);
             }
         }
     }

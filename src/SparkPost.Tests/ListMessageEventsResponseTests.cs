@@ -1,25 +1,23 @@
-﻿using NUnit.Framework;
-using Should;
+﻿using Xunit;
 
 namespace SparkPost.Tests
 {
     public class ListMessageEventsResponseTests
     {
-        [TestFixture]
         public class DefaultTests
         {
-            [Test]
+            [Fact]
             public void It_should_not_have_nil_links()
             {
                 var response = new ListMessageEventsResponse();
-                response.Links.ShouldNotBeNull();
+                Assert.NotNull(response.Links);
             }
 
-            [Test]
+            [Fact]
             public void It_should_not_have_nil_events()
             {
                 var response = new ListMessageEventsResponse();
-                response.MessageEvents.ShouldNotBeNull();
+                Assert.NotNull(response.MessageEvents);
             }
         }
     }

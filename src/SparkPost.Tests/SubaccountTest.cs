@@ -1,7 +1,4 @@
-﻿using NUnit.Framework;
-using Should;
-
-namespace SparkPost.Tests
+﻿namespace SparkPost.Tests
 {
     public class SubaccountTests
     {

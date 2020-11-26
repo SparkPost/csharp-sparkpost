@@ -1,41 +1,41 @@
-﻿using AutoMoq.Helpers;
-using NUnit.Framework;
-using Should;
-using SparkPost.RequestMethods;
+﻿using SparkPost.RequestMethods;
+using Xunit;
 
 namespace SparkPost.Tests
 {
     public class RequestMethodFinderTests
     {
-        [TestFixture]
-        public class FindForTests : AutoMoqTestFixture<RequestMethodFinder>
+        public class FindForTests
         {
-            [Test]
+            private readonly RequestMethodFinder finder;
+
+            public FindForTests()
+            {
+                finder = new RequestMethodFinder(null, null);
+            }
+
+            [Fact]
             public void It_should_return_put_for_put()
             {
-                Subject.FindFor(new Request {Method = "PUT"})
-                    .ShouldBeType(typeof (Put));
+                Assert.IsType<Put>(finder.FindFor(new Request {Method = "PUT"}));
             }
 
-            [Test]
+            [Fact]
             public void It_should_return_post_for_post()
             {
-                Subject.FindFor(new Request {Method = "POST"})
-                    .ShouldBeType(typeof (Post));
+                Assert.IsType<Post>(finder.FindFor(new Request {Method = "POST"}));
             }
 
-            [Test]
+            [Fact]
             public void It_should_return_delete_for_delete()
             {
-                Subject.FindFor(new Request {Method = "DELETE"})
-                    .ShouldBeType(typeof (Delete));
+                Assert.IsType<Delete>(finder.FindFor(new Request {Method = "DELETE"}));
             }
 
-            [Test]
+            [Fact]
             public void It_should_return_get_for_get()
             {
-                Subject.FindFor(new Request {Method = "GET"})
-                    .ShouldBeType(typeof (Get));
+                Assert.IsType<Get>(finder.FindFor(new Request {Method = "GET"}));
             }
         }
     }
